@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["readline","This method will read a line from STDIN and will display a `prompt`"]],"type":[["Result","The error type for I/O and Linux Syscalls (Errno)"]],"mod":[["consts",""],["error","Contains error type for handling I/O and Errno errors"]]});
+initSidebarItems({"type":[["Result","The error type for I/O and Linux Syscalls (Errno)"]],"fn":[["readline","This method will read a line from STDIN and will display a `prompt`"]],"mod":[["consts",""],["error","Contains error type for handling I/O and Errno errors"]]});
