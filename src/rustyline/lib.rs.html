@@ -189,9 +189,6 @@
 <span id="147">147</span>
 <span id="148">148</span>
 <span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//!Readline for Rust</span>
 <span class='doccomment'>//!</span>
@@ -284,14 +281,11 @@
 <span class='doccomment'>/// It will also handle special inputs in an appropriate fashion</span>
 <span class='doccomment'>/// (e.g., C-c will exit readline)</span>
 <span class='kw'>fn</span> <span class='ident'>readline_edit</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span> {
-    <span class='comment'>// Preallocate a buffer for the input line</span>
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>with_capacity</span>(<span class='ident'>MAX_LINE</span>);
-    
-    <span class='comment'>// Input buffer for reading a single UTF-8</span>
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>input</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>with_capacity</span>(<span class='number'>1</span>);
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>input</span>: [<span class='ident'>u8</span>; <span class='number'>1</span>] <span class='op'>=</span> [<span class='number'>0</span>];
     <span class='kw'>loop</span> {
-        <span class='ident'>io</span>::<span class='ident'>stdin</span>().<span class='ident'>read_to_string</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>input</span>).<span class='ident'>unwrap</span>();
-        <span class='kw'>match</span> <span class='ident'>u8_to_key_press</span>(<span class='ident'>input</span>.<span class='ident'>as_bytes</span>()[<span class='number'>0</span>]) {
+        <span class='ident'>io</span>::<span class='ident'>stdin</span>().<span class='ident'>read</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>input</span>).<span class='ident'>unwrap</span>();
+        <span class='kw'>match</span> <span class='ident'>u8_to_key_press</span>(<span class='ident'>input</span>[<span class='number'>0</span>]) {
             <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_A</span> <span class='op'>=&gt;</span> <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;Pressed C-a&quot;</span>),
             <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_B</span> <span class='op'>=&gt;</span> <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;Pressed C-b&quot;</span>),
             <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_C</span> <span class='op'>=&gt;</span> <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;Pressed C-c&quot;</span>),
@@ -308,11 +302,11 @@
             <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_W</span> <span class='op'>=&gt;</span> <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;Pressed C-w&quot;</span>),
             <span class='ident'>KeyPress</span>::<span class='ident'>ESC</span>    <span class='op'>=&gt;</span> <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;Pressed esc&quot;</span>) ,
             <span class='ident'>KeyPress</span>::<span class='ident'>ENTER</span>  <span class='op'>=&gt;</span> <span class='kw'>break</span>,
-            _      <span class='op'>=&gt;</span> { <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>input</span>); <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>io</span>::<span class='ident'>stdout</span>().<span class='ident'>flush</span>()); }
+            _      <span class='op'>=&gt;</span> { <span class='macro'>print</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>input</span>[<span class='number'>0</span>]); <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>io</span>::<span class='ident'>stdout</span>().<span class='ident'>flush</span>()); }
         }
-        <span class='ident'>buffer</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>input</span>);
+        <span class='ident'>buffer</span>.<span class='ident'>push</span>(<span class='ident'>input</span>[<span class='number'>0</span>]);
     }
-    <span class='prelude-val'>Ok</span>(<span class='ident'>buffer</span>)
+    <span class='prelude-val'>Ok</span>(<span class='ident'>String</span>::<span class='ident'>from_utf8</span>(<span class='ident'>buffer</span>).<span class='ident'>unwrap</span>())
 }
 
 <span class='doccomment'>/// Readline method that will enable RAW mode, call the ```readline_edit()```</span>
