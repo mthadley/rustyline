@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `execvpe` fn in crate `nix`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, execvpe">
+    <meta name="description" content="API documentation for the Rust `PTRACE_PEEKSIGINFO` constant in crate `nix`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, PTRACE_PEEKSIGINFO">
 
-    <title>nix::unistd::execvpe - Rust</title>
+    <title>nix::sys::ptrace::ptrace::PTRACE_PEEKSIGINFO - Rust</title>
 
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../../main.css">
 
     
     
@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>nix</a>::<wbr><a href='index.html'>unistd</a></p><script>window.sidebarCurrent = {name: 'execvpe', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='../../../index.html'>nix</a>::<wbr><a href='../../index.html'>sys</a>::<wbr><a href='../index.html'>ptrace</a>::<wbr><a href='index.html'>ptrace</a></p><script>window.sidebarCurrent = {name: 'PTRACE_PEEKSIGINFO', ty: 'constant', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -40,11 +40,13 @@
         </form>
     </nav>
 
-    <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>nix</a>::<wbr><a href='index.html'>unistd</a>::<wbr><a class='fn' href=''>execvpe</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-32248' href='../../src/nix/unistd.rs.html#353-369'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn execvpe(filename: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CString.html' title='std::ffi::c_str::CString'>CString</a>, args: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='http://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CString.html' title='std::ffi::c_str::CString'>CString</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, env: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='http://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CString.html' title='std::ffi::c_str::CString'>CString</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='type' href='../../nix/type.Result.html' title='nix::Result'>Result</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</pre></section>
+    <section id='main' class="content constant">
+<h1 class='fqn'><span class='in-band'><a href='../../../index.html'>nix</a>::<wbr><a href='../../index.html'>sys</a>::<wbr><a href='../index.html'>ptrace</a>::<wbr><a href='index.html'>ptrace</a>::<wbr><a class='constant' href=''>PTRACE_PEEKSIGINFO</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-31457' class='srclink' href='../../../../src/nix/sys/ptrace.rs.html#43' title='goto source code'>[src]</a></span></h1>
+<pre class='rust const'>pub const PTRACE_PEEKSIGINFO: <a class='type' href='../../../../nix/sys/ptrace/ptrace/type.PtraceRequest.html' title='nix::sys::ptrace::ptrace::PtraceRequest'>PtraceRequest</a><code> = </code><code>0x4209</code></pre></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -77,19 +79,23 @@
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
+            </p>
         </div>
     </div>
 
     
 
     <script>
-        window.rootPath = "../../";
+        window.rootPath = "../../../../";
         window.currentCrate = "nix";
         window.playgroundUrl = "";
     </script>
-    <script src="../../jquery.js"></script>
-    <script src="../../main.js"></script>
+    <script src="../../../../jquery.js"></script>
+    <script src="../../../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script async src="../../../../search-index.js"></script>
 </body>
 </html>
