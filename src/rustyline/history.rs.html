@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -189,6 +189,7 @@
 <span id="147">147</span>
 <span id="148">148</span>
 <span id="149">149</span>
+<span id="150">150</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! History API</span>
 
@@ -223,14 +224,15 @@
         <span class='kw'>if</span> <span class='ident'>line</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>0</span> <span class='op'>||</span> <span class='ident'>line</span>.<span class='ident'>chars</span>().<span class='ident'>next</span>().<span class='ident'>map_or</span>(<span class='boolval'>true</span>, <span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span>.<span class='ident'>is_whitespace</span>()) { <span class='comment'>// ignorespace</span>
             <span class='kw'>return</span> <span class='boolval'>false</span>;
         }
-        <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>from</span>(<span class='ident'>line</span>); <span class='comment'>// TODO try to allocate only on push_back</span>
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>entries</span>.<span class='ident'>back</span>() <span class='op'>==</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>) { <span class='comment'>// ignoredups</span>
-            <span class='kw'>return</span> <span class='boolval'>false</span>;
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>s</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>entries</span>.<span class='ident'>back</span>() {
+            <span class='kw'>if</span> <span class='ident'>s</span> <span class='op'>==</span> <span class='ident'>line</span> { <span class='comment'>// ignoredups</span>
+                <span class='kw'>return</span> <span class='boolval'>false</span>;
+            }
         }
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>entries</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>max_len</span> {
             <span class='self'>self</span>.<span class='ident'>entries</span>.<span class='ident'>pop_front</span>();
         }
-        <span class='self'>self</span>.<span class='ident'>entries</span>.<span class='ident'>push_back</span>(<span class='ident'>s</span>);
+        <span class='self'>self</span>.<span class='ident'>entries</span>.<span class='ident'>push_back</span>(<span class='ident'>String</span>::<span class='ident'>from</span>(<span class='ident'>line</span>));
         <span class='kw'>return</span> <span class='boolval'>true</span>;
     }
 
@@ -344,10 +346,12 @@
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -364,7 +368,7 @@
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -384,7 +388,7 @@
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 

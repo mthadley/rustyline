@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -871,6 +871,9 @@
 <span id="829">829</span>
 <span id="830">830</span>
 <span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//!Readline for Rust</span>
 <span class='doccomment'>//!</span>
@@ -890,6 +893,8 @@
 <span class='doccomment'>//!```</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>drain</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>io</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>path_relative_from</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>str_split_at</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>str_char</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>unicode</span>)]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>libc</span>;
@@ -903,8 +908,7 @@
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>history</span>;
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='ident'>Read</span>, <span class='ident'>Write</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>,<span class='ident'>Read</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::<span class='ident'>Path</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>;
 <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>errno</span>::<span class='ident'>Errno</span>;
@@ -945,8 +949,8 @@
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>update_buf</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>buf</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) {
-        <span class='self'>self</span>.<span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>from</span>(<span class='ident'>buf</span>);
+    <span class='kw'>fn</span> <span class='ident'>update_buf</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>buf</span>: <span class='ident'>S</span>) {
+        <span class='self'>self</span>.<span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>buf</span>.<span class='ident'>into</span>();
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>capacity</span>() <span class='op'>&lt;</span> <span class='ident'>MAX_LINE</span> {
             <span class='kw'>let</span> <span class='ident'>cap</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>capacity</span>();
             <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>reserve_exact</span>(<span class='ident'>MAX_LINE</span> <span class='op'>-</span> <span class='ident'>cap</span>);
@@ -1009,12 +1013,12 @@
     } <span class='kw'>else</span> {
         <span class='kw'>let</span> <span class='ident'>original_term</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcgetattr</span>(<span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>));
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>raw</span> <span class='op'>=</span> <span class='ident'>original_term</span>;
-        <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>BRKINT</span> <span class='op'>|</span> <span class='ident'>ICRNL</span> <span class='op'>|</span> <span class='ident'>INPCK</span> <span class='op'>|</span> <span class='ident'>ISTRIP</span> <span class='op'>|</span> <span class='ident'>IXON</span>);
-        <span class='ident'>raw</span>.<span class='ident'>c_oflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_oflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>OPOST</span>);
-        <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>|</span> (<span class='ident'>CS8</span>);
-        <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>ECHO</span> <span class='op'>|</span> <span class='ident'>ICANON</span> <span class='op'>|</span> <span class='ident'>IEXTEN</span> <span class='op'>|</span> <span class='ident'>ISIG</span>);
-        <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VMIN</span>] <span class='op'>=</span> <span class='number'>1</span>;
-        <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VTIME</span>] <span class='op'>=</span> <span class='number'>0</span>;
+        <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>BRKINT</span> <span class='op'>|</span> <span class='ident'>ICRNL</span> <span class='op'>|</span> <span class='ident'>INPCK</span> <span class='op'>|</span> <span class='ident'>ISTRIP</span> <span class='op'>|</span> <span class='ident'>IXON</span>); <span class='comment'>// disable BREAK interrupt, CR to NL conversion on input, input parity check, strip high bit (bit 8), output flow control</span>
+        <span class='ident'>raw</span>.<span class='ident'>c_oflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_oflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>OPOST</span>); <span class='comment'>// disable all output processing</span>
+        <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>|</span> (<span class='ident'>CS8</span>); <span class='comment'>// character-size mark (8 bits)</span>
+        <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>ECHO</span> <span class='op'>|</span> <span class='ident'>ICANON</span> <span class='op'>|</span> <span class='ident'>IEXTEN</span> <span class='op'>|</span> <span class='ident'>ISIG</span>); <span class='comment'>// disable echoing, canonical mode, extended input processing and signals</span>
+        <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VMIN</span>] <span class='op'>=</span> <span class='number'>1</span>; <span class='comment'>// One character-at-a-time input</span>
+        <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VTIME</span>] <span class='op'>=</span> <span class='number'>0</span>; <span class='comment'>// with blocking read</span>
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcsetattr</span>(<span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>, <span class='ident'>termios</span>::<span class='ident'>TCSAFLUSH</span>, <span class='kw-2'>&amp;</span><span class='ident'>raw</span>));
         <span class='prelude-val'>Ok</span>(<span class='ident'>original_term</span>)
     }
@@ -1294,10 +1298,10 @@
         }
         <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>history_index</span> <span class='op'>&lt;</span> <span class='ident'>history</span>.<span class='ident'>len</span>() {
             <span class='kw'>let</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>history</span>.<span class='ident'>get</span>(<span class='ident'>s</span>.<span class='ident'>history_index</span>).<span class='ident'>unwrap</span>();
-            <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='ident'>buf</span>);
+            <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='ident'>buf</span>.<span class='ident'>clone</span>());
         } <span class='kw'>else</span> {
             <span class='kw'>let</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>history_end</span>.<span class='ident'>clone</span>(); <span class='comment'>// TODO how to avoid cloning?</span>
-            <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='kw-2'>&amp;</span><span class='ident'>buf</span>);
+            <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='ident'>buf</span>);
         };
         <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>();
         <span class='ident'>refresh_line</span>(<span class='ident'>s</span>)
@@ -1308,7 +1312,7 @@
 
 <span class='doccomment'>/// Completes the line/word</span>
 <span class='kw'>fn</span> <span class='ident'>complete_line</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>io</span>::<span class='ident'>Read</span><span class='op'>&gt;</span>(<span class='ident'>chars</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>io</span>::<span class='ident'>Chars</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>, <span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>, <span class='ident'>completer</span>: <span class='kw-2'>&amp;</span><span class='ident'>Completer</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>char</span><span class='op'>&gt;&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>candidates</span> <span class='op'>=</span> <span class='ident'>completer</span>.<span class='ident'>complete</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>.<span class='ident'>buf</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
+    <span class='kw'>let</span> (<span class='ident'>start</span>, <span class='ident'>candidates</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>completer</span>.<span class='ident'>complete</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>.<span class='ident'>buf</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>));
     <span class='kw'>if</span> <span class='ident'>candidates</span>.<span class='ident'>is_empty</span>() {
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>beep</span>());
         <span class='prelude-val'>Ok</span>(<span class='prelude-val'>None</span>)
@@ -1320,11 +1324,11 @@
             <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='ident'>candidates</span>.<span class='ident'>len</span>() {
                 <span class='kw'>let</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>clone</span>(); <span class='comment'>// TODO how to avoid cloning?</span>
                 <span class='kw'>let</span> <span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>pos</span>;
-                <span class='kw'>let</span> (<span class='ident'>tmp_buf</span>, <span class='ident'>tmp_pos</span>) <span class='op'>=</span> <span class='ident'>completer</span>.<span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>.<span class='ident'>buf</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>, <span class='kw-2'>&amp;</span><span class='ident'>candidates</span>[<span class='ident'>i</span>]);
+                <span class='kw'>let</span> (<span class='ident'>tmp_buf</span>, <span class='ident'>tmp_pos</span>) <span class='op'>=</span> <span class='ident'>completer</span>.<span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>.<span class='ident'>buf</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>, <span class='ident'>start</span>, <span class='kw-2'>&amp;</span><span class='ident'>candidates</span>[<span class='ident'>i</span>]);
                 <span class='ident'>s</span>.<span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>tmp_buf</span>;
                 <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>tmp_pos</span>;
                 <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>refresh_line</span>(<span class='ident'>s</span>));
-                <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='kw-2'>&amp;</span><span class='ident'>buf</span>);
+                <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='ident'>buf</span>);
                 <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>pos</span>;
             } <span class='kw'>else</span> {
                 <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>refresh_line</span>(<span class='ident'>s</span>));
@@ -1343,12 +1347,12 @@
                     <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='ident'>candidates</span>.<span class='ident'>len</span>() {
                         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>refresh_line</span>(<span class='ident'>s</span>));
                     }
-                    <span class='kw'>break</span>
+                    <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='prelude-val'>None</span>)
                 },
                 _ <span class='op'>=&gt;</span> { <span class='comment'>// Update buffer and return</span>
                     <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='ident'>candidates</span>.<span class='ident'>len</span>() {
-                        <span class='kw'>let</span> (<span class='ident'>buf</span>, <span class='ident'>pos</span>) <span class='op'>=</span> <span class='ident'>completer</span>.<span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>.<span class='ident'>buf</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>, <span class='kw-2'>&amp;</span><span class='ident'>candidates</span>[<span class='ident'>i</span>]);
-                        <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='kw-2'>&amp;</span><span class='ident'>buf</span>);
+                        <span class='kw'>let</span> (<span class='ident'>buf</span>, <span class='ident'>pos</span>) <span class='op'>=</span> <span class='ident'>completer</span>.<span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>.<span class='ident'>buf</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>, <span class='ident'>start</span>, <span class='kw-2'>&amp;</span><span class='ident'>candidates</span>[<span class='ident'>i</span>]);
+                        <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='ident'>buf</span>);
                         <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>pos</span>;
                     }
                     <span class='kw'>break</span>
@@ -1370,13 +1374,14 @@
     <span class='kw'>let</span> <span class='ident'>stdin</span> <span class='op'>=</span> <span class='ident'>io</span>::<span class='ident'>stdin</span>();
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chars</span> <span class='op'>=</span> <span class='ident'>stdin</span>.<span class='ident'>lock</span>().<span class='ident'>chars</span>();
     <span class='kw'>loop</span> {
-        <span class='kw'>let</span> <span class='ident'>ch</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>chars</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>());
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ch</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>chars</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>()); <span class='comment'>// FIXME unwrap</span>
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>key</span> <span class='op'>=</span> <span class='ident'>char_to_key_press</span>(<span class='ident'>ch</span>);
         <span class='comment'>// autocomplete</span>
         <span class='kw'>if</span> <span class='ident'>key</span> <span class='op'>==</span> <span class='ident'>KeyPress</span>::<span class='ident'>TAB</span> <span class='op'>&amp;&amp;</span> <span class='ident'>completer</span>.<span class='ident'>is_some</span>() {
             <span class='kw'>let</span> <span class='ident'>next</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>complete_line</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>chars</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='ident'>completer</span>.<span class='ident'>unwrap</span>()));
             <span class='kw'>if</span> <span class='ident'>next</span>.<span class='ident'>is_some</span>() {
-                <span class='ident'>key</span> <span class='op'>=</span> <span class='ident'>char_to_key_press</span>(<span class='ident'>next</span>.<span class='ident'>unwrap</span>());
+                <span class='ident'>ch</span> <span class='op'>=</span> <span class='ident'>next</span>.<span class='ident'>unwrap</span>();
+                <span class='ident'>key</span> <span class='op'>=</span> <span class='ident'>char_to_key_press</span>(<span class='ident'>ch</span>);
             } <span class='kw'>else</span> {
                 <span class='kw'>continue</span>;
             }
@@ -1537,6 +1542,7 @@
     <span class='kw'>use</span> <span class='ident'>history</span>::<span class='ident'>History</span>;
     <span class='kw'>use</span> <span class='ident'>completion</span>::<span class='ident'>Completer</span>;
     <span class='kw'>use</span> <span class='ident'>State</span>;
+    <span class='kw'>use</span> <span class='ident'>super</span>::<span class='prelude-ty'>Result</span>;
 
     <span class='kw'>fn</span> <span class='ident'>init_state</span><span class='op'>&lt;</span><span class='lifetime'>&#39;out</span><span class='op'>&gt;</span>(<span class='ident'>out</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;out</span> <span class='kw-2'>mut</span> <span class='ident'>Write</span>, <span class='ident'>line</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>pos</span>: <span class='ident'>usize</span>, <span class='ident'>cols</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>State</span><span class='op'>&lt;</span><span class='lifetime'>&#39;out</span>, <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span> {
         <span class='ident'>State</span> {
@@ -1683,8 +1689,8 @@
 
     <span class='kw'>struct</span> <span class='ident'>SimpleCompleter</span>;
     <span class='kw'>impl</span> <span class='ident'>Completer</span> <span class='kw'>for</span> <span class='ident'>SimpleCompleter</span> {
-        <span class='kw'>fn</span> <span class='ident'>complete</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>line</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>_pos</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span> {
-            <span class='macro'>vec</span><span class='macro'>!</span>(<span class='ident'>line</span>.<span class='ident'>to_string</span>() <span class='op'>+</span> <span class='string'>&quot;t&quot;</span>)
+        <span class='kw'>fn</span> <span class='ident'>complete</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>line</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>_pos</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>)<span class='op'>&gt;</span> {
+            <span class='prelude-val'>Ok</span>((<span class='number'>0</span>, <span class='macro'>vec</span><span class='macro'>!</span>(<span class='ident'>line</span>.<span class='ident'>to_string</span>() <span class='op'>+</span> <span class='string'>&quot;t&quot;</span>)))
         }
     }
 
@@ -1709,10 +1715,12 @@
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -1729,7 +1737,7 @@
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -1749,7 +1757,7 @@
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 

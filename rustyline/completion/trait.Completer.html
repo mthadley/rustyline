@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'><a href='../index.html'>rustyline</a>::<wbr><a href='index.html'>completion</a></p><script>window.sidebarCurrent = {name: 'Completer', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -45,37 +45,41 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-9' class='srclink' href='../../src/rustyline/completion.rs.html#4-15' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-15' class='srclink' href='../../src/rustyline/completion.rs.html#14-31' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Completer {
-    fn <a href='#tymethod.complete' class='fnname'>complete</a>(&amp;self, line: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, pos: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;;
+    fn <a href='#tymethod.complete' class='fnname'>complete</a>(&amp;self, line: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, pos: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='type' href='../../rustyline/type.Result.html' title='rustyline::Result'>Result</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;)</a>&gt;;
 
-    fn <a href='#method.update' class='fnname'>update</a>(&amp;self, _line: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, _pos: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, elected: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>)</a> { ... }
+    fn <a href='#method.update' class='fnname'>update</a>(&amp;self, line: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, pos: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, start: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, elected: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>)</a> { ... }
 }</pre><div class='docblock'><p>To be called for tab-completion.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.complete' class='method stab '><code>fn <a href='#tymethod.complete' class='fnname'>complete</a>(&amp;self, line: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, pos: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h3><div class='docblock'><p>Takes the currently edited <code>line</code> with the cursor <code>pos</code>ition and
-returns the completion candidates for the partial word to be completed.</p>
+        <h3 id='tymethod.complete' class='method stab '><code>fn <a href='#tymethod.complete' class='fnname'>complete</a>(&amp;self, line: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, pos: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='type' href='../../rustyline/type.Result.html' title='rustyline::Result'>Result</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;)</a>&gt;</code></h3><div class='docblock'><p>Takes the currently edited <code>line</code> with the cursor <code>pos</code>ition and
+returns the start position and the completion candidates for the partial word to be completed.
+&quot;ls /usr/loc&quot; =&gt; Ok((3, vec![&quot;/usr/local/&quot;]))</p>
 </div></div>
             <h2 id='provided-methods'>Provided Methods</h2>
             <div class='methods'>
-        <h3 id='method.update' class='method stab '><code>fn <a href='#method.update' class='fnname'>update</a>(&amp;self, _line: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, _pos: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, elected: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>)</a></code></h3><div class='docblock'><p>Takes the currently edited <code>line</code> with the cursor <code>pos</code>ition and
+        <h3 id='method.update' class='method stab '><code>fn <a href='#method.update' class='fnname'>update</a>(&amp;self, line: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, pos: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, start: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, elected: &amp;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>)</a></code></h3><div class='docblock'><p>Takes the currently edited <code>line</code> with the cursor <code>pos</code>ition and
 the <code>elected</code> candidate.
 Returns the new line content and cursor position.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    </ul><script type="text/javascript" async
+    <li><code>impl <a class='trait' href='../../rustyline/completion/trait.Completer.html' title='rustyline::completion::Completer'>Completer</a> for <a class='struct' href='../../rustyline/completion/struct.FilenameCompleter.html' title='rustyline::completion::FilenameCompleter'>FilenameCompleter</a></code></li>
+</ul><script type="text/javascript" async
                               src="../../implementors/rustyline/completion/trait.Completer.js">
                       </script></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -92,7 +96,7 @@ Returns the new line content and cursor position.</p>
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -112,7 +116,7 @@ Returns the new line content and cursor position.</p>
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 
