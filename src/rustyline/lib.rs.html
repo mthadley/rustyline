@@ -997,6 +997,18 @@
 <span id="955">955</span>
 <span id="956">956</span>
 <span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
+<span id="968">968</span>
+<span id="969">969</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//!Readline for Rust</span>
 <span class='doccomment'>//!</span>
@@ -1715,8 +1727,11 @@
 
 <span class='kw'>fn</span> <span class='ident'>readline_direct</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>line</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
-    <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>io</span>::<span class='ident'>stdin</span>().<span class='ident'>read_line</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>line</span>));
-    <span class='prelude-val'>Ok</span>(<span class='ident'>line</span>)
+    <span class='kw'>if</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>io</span>::<span class='ident'>stdin</span>().<span class='ident'>read_line</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>line</span>)) <span class='op'>&gt;</span> <span class='number'>0</span> {
+        <span class='prelude-val'>Ok</span>(<span class='ident'>line</span>)
+    } <span class='kw'>else</span> {
+        <span class='prelude-val'>Err</span>(<span class='ident'>error</span>::<span class='ident'>ReadlineError</span>::<span class='ident'>Eof</span>)
+    }
 }
 
 <span class='doccomment'>/// Line editor</span>
@@ -1779,6 +1794,15 @@
     <span class='doccomment'>/// Register a callback function to be called for tab-completion.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_completer</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>completer</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;completer</span> <span class='ident'>Completer</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>completer</span> <span class='op'>=</span> <span class='ident'>completer</span>;
+    }
+}
+
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;completer</span><span class='op'>&gt;</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>Editor</span><span class='op'>&lt;</span><span class='lifetime'>&#39;completer</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
+        <span class='ident'>f</span>.<span class='ident'>debug_struct</span>(<span class='string'>&quot;State&quot;</span>)
+            .<span class='ident'>field</span>(<span class='string'>&quot;unsupported_term&quot;</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>unsupported_term</span>)
+            .<span class='ident'>field</span>(<span class='string'>&quot;stdin_isatty&quot;</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>stdin_isatty</span>)
+            .<span class='ident'>finish</span>()
     }
 }
 
