@@ -1041,6 +1041,10 @@
 <span id="998"> 998</span>
 <span id="999"> 999</span>
 <span id="1000">1000</span>
+<span id="1001">1001</span>
+<span id="1002">1002</span>
+<span id="1003">1003</span>
+<span id="1004">1004</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Readline for Rust</span>
 <span class='doccomment'>//!</span>
@@ -1848,6 +1852,10 @@
     <span class='doccomment'>/// Clear history.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>clear_history</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='self'>self</span>.<span class='ident'>history</span>.<span class='ident'>clear</span>()
+    }
+    <span class='doccomment'>/// Return a reference to the history object.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_history</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>History</span> {
+        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>history</span>
     }
 
     <span class='doccomment'>/// Register a callback function to be called for tab-completion.</span>
