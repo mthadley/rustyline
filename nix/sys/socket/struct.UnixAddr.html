@@ -43,10 +43,10 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../../index.html'>nix</a>::<wbr><a href='../index.html'>sys</a>::<wbr><a href='index.html'>socket</a>::<wbr><a class='struct' href=''>UnixAddr</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-4352' class='srclink' href='../../../src/nix/sys/socket/addr.rs.html#342' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-4342' class='srclink' href='../../../src/nix/sys/socket/addr.rs.html#342' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct UnixAddr(pub <a class='struct' href='../../../nix/sys/socket/struct.sockaddr_un.html' title='nix::sys::socket::sockaddr_un'>sockaddr_un</a>, pub <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>);</pre><div class='docblock'><p>A wrapper around sockaddr_un. We track the length of sun_path,
 because it may not be null-terminated (unconnected and abstract
 sockets). Note that the actual sockaddr length is greater by
