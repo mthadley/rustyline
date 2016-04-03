@@ -100,6 +100,9 @@
 <span id="57">57</span>
 <span id="58">58</span>
 <span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
 </pre><pre class='rust '>
 
 
@@ -126,10 +129,12 @@
     <span class='ident'>CTRL_T</span>,
     <span class='ident'>CTRL_U</span>,
     <span class='ident'>CTRL_W</span>,
+    <span class='ident'>CTRL_Y</span>,
     <span class='ident'>ESC</span>,
     <span class='ident'>BACKSPACE</span>,
     <span class='ident'>UNKNOWN_ESC_SEQ</span>,
     <span class='ident'>ESC_SEQ_DELETE</span>,
+    <span class='ident'>ESC_Y</span>,
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>char_to_key_press</span>(<span class='ident'>c</span>: <span class='ident'>char</span>) <span class='op'>-&gt;</span> <span class='ident'>KeyPress</span> {
@@ -155,6 +160,7 @@
         <span class='string'>&#39;\x14&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_T</span>,
         <span class='string'>&#39;\x15&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_U</span>,
         <span class='string'>&#39;\x17&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_W</span>,
+        <span class='string'>&#39;\x19&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_Y</span>,
         <span class='string'>&#39;\x1b&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>ESC</span>,
         <span class='string'>&#39;\x7f&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>BACKSPACE</span>,
         _ <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>NULL</span>,
