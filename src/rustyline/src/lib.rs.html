@@ -1336,6 +1336,13 @@
 <span id="1292">1292</span>
 <span id="1293">1293</span>
 <span id="1294">1294</span>
+<span id="1295">1295</span>
+<span id="1296">1296</span>
+<span id="1297">1297</span>
+<span id="1298">1298</span>
+<span id="1299">1299</span>
+<span id="1300">1300</span>
+<span id="1301">1301</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Readline for Rust</span>
 <span class='doccomment'>//!</span>
@@ -1356,6 +1363,9 @@
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>io</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>str_char</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>unicode</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;clippy&quot;</span>, <span class='ident'>feature</span>(<span class='ident'>plugin</span>))]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;clippy&quot;</span>, <span class='ident'>plugin</span>(<span class='ident'>clippy</span>))]</span>
+
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>libc</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>nix</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>unicode_width</span>;
@@ -1511,8 +1521,7 @@
 
 <span class='doccomment'>/// Check to see if `fd` is a TTY</span>
 <span class='kw'>fn</span> <span class='ident'>is_a_tty</span>(<span class='ident'>fd</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-    <span class='kw'>let</span> <span class='ident'>isatty</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>isatty</span>(<span class='ident'>fd</span>) } <span class='op'>!=</span> <span class='number'>0</span>;
-    <span class='ident'>isatty</span>
+    <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>isatty</span>(<span class='ident'>fd</span>) <span class='op'>!=</span> <span class='number'>0</span> }
 }
 
 <span class='doccomment'>/// Check to see if the current `TERM` is unsupported</span>
@@ -1539,19 +1548,18 @@
     <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>sys</span>::<span class='ident'>termios</span>::{<span class='ident'>BRKINT</span>, <span class='ident'>ICRNL</span>, <span class='ident'>INPCK</span>, <span class='ident'>ISTRIP</span>, <span class='ident'>IXON</span>, <span class='ident'>OPOST</span>, <span class='ident'>CS8</span>, <span class='ident'>ECHO</span>, <span class='ident'>ICANON</span>, <span class='ident'>IEXTEN</span>,
                             <span class='ident'>ISIG</span>, <span class='ident'>VMIN</span>, <span class='ident'>VTIME</span>};
     <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>is_a_tty</span>(<span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>) {
-        <span class='prelude-val'>Err</span>(<span class='ident'>from_errno</span>(<span class='ident'>Errno</span>::<span class='ident'>ENOTTY</span>))
-    } <span class='kw'>else</span> {
-        <span class='kw'>let</span> <span class='ident'>original_term</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcgetattr</span>(<span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>));
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>raw</span> <span class='op'>=</span> <span class='ident'>original_term</span>;
-        <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>BRKINT</span> <span class='op'>|</span> <span class='ident'>ICRNL</span> <span class='op'>|</span> <span class='ident'>INPCK</span> <span class='op'>|</span> <span class='ident'>ISTRIP</span> <span class='op'>|</span> <span class='ident'>IXON</span>); <span class='comment'>// disable BREAK interrupt, CR to NL conversion on input, input parity check, strip high bit (bit 8), output flow control</span>
-        <span class='ident'>raw</span>.<span class='ident'>c_oflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_oflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>OPOST</span>); <span class='comment'>// disable all output processing</span>
-        <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>|</span> (<span class='ident'>CS8</span>); <span class='comment'>// character-size mark (8 bits)</span>
-        <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>ECHO</span> <span class='op'>|</span> <span class='ident'>ICANON</span> <span class='op'>|</span> <span class='ident'>IEXTEN</span> <span class='op'>|</span> <span class='ident'>ISIG</span>); <span class='comment'>// disable echoing, canonical mode, extended input processing and signals</span>
-        <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VMIN</span>] <span class='op'>=</span> <span class='number'>1</span>; <span class='comment'>// One character-at-a-time input</span>
-        <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VTIME</span>] <span class='op'>=</span> <span class='number'>0</span>; <span class='comment'>// with blocking read</span>
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcsetattr</span>(<span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>, <span class='ident'>termios</span>::<span class='ident'>TCSAFLUSH</span>, <span class='kw-2'>&amp;</span><span class='ident'>raw</span>));
-        <span class='prelude-val'>Ok</span>(<span class='ident'>original_term</span>)
+        <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>from_errno</span>(<span class='ident'>Errno</span>::<span class='ident'>ENOTTY</span>));
     }
+    <span class='kw'>let</span> <span class='ident'>original_term</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcgetattr</span>(<span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>));
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>raw</span> <span class='op'>=</span> <span class='ident'>original_term</span>;
+    <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>BRKINT</span> <span class='op'>|</span> <span class='ident'>ICRNL</span> <span class='op'>|</span> <span class='ident'>INPCK</span> <span class='op'>|</span> <span class='ident'>ISTRIP</span> <span class='op'>|</span> <span class='ident'>IXON</span>); <span class='comment'>// disable BREAK interrupt, CR to NL conversion on input, input parity check, strip high bit (bit 8), output flow control</span>
+    <span class='ident'>raw</span>.<span class='ident'>c_oflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_oflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>OPOST</span>); <span class='comment'>// disable all output processing</span>
+    <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>|</span> (<span class='ident'>CS8</span>); <span class='comment'>// character-size mark (8 bits)</span>
+    <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>ECHO</span> <span class='op'>|</span> <span class='ident'>ICANON</span> <span class='op'>|</span> <span class='ident'>IEXTEN</span> <span class='op'>|</span> <span class='ident'>ISIG</span>); <span class='comment'>// disable echoing, canonical mode, extended input processing and signals</span>
+    <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VMIN</span>] <span class='op'>=</span> <span class='number'>1</span>; <span class='comment'>// One character-at-a-time input</span>
+    <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VTIME</span>] <span class='op'>=</span> <span class='number'>0</span>; <span class='comment'>// with blocking read</span>
+    <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcsetattr</span>(<span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>, <span class='ident'>termios</span>::<span class='ident'>TCSAFLUSH</span>, <span class='kw-2'>&amp;</span><span class='ident'>raw</span>));
+    <span class='prelude-val'>Ok</span>(<span class='ident'>original_term</span>)
 }
 
 <span class='doccomment'>/// Disable Raw mode for the term</span>
@@ -1615,8 +1623,9 @@
 <span class='doccomment'>/// starting at `orig`.</span>
 <span class='doccomment'>/// Control characters are treated as having zero width.</span>
 <span class='doccomment'>/// Characters with 2 column width are correctly handled (not splitted).</span>
+<span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;clippy&quot;</span>, <span class='ident'>allow</span>(<span class='ident'>if_same_then_else</span>))]</span>
 <span class='kw'>fn</span> <span class='ident'>calculate_position</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>orig</span>: <span class='ident'>Position</span>, <span class='ident'>cols</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Position</span> {
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>orig</span>.<span class='ident'>clone</span>();
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>orig</span>;
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>esc_seq</span> <span class='op'>=</span> <span class='number'>0</span>;
     <span class='kw'>for</span> <span class='ident'>c</span> <span class='kw'>in</span> <span class='ident'>s</span>.<span class='ident'>chars</span>() {
         <span class='kw'>let</span> <span class='ident'>cw</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>esc_seq</span> <span class='op'>==</span> <span class='number'>1</span> {
@@ -1689,7 +1698,7 @@
 
 <span class='comment'>// Yank/paste `text` at current position.</span>
 <span class='kw'>fn</span> <span class='ident'>edit_yank</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>, <span class='ident'>text</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>if</span> <span class='ident'>text</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>0</span> <span class='op'>||</span> (<span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='op'>+</span> <span class='ident'>text</span>.<span class='ident'>len</span>()) <span class='op'>&gt;</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>capacity</span>() {
+    <span class='kw'>if</span> <span class='ident'>text</span>.<span class='ident'>is_empty</span>() <span class='op'>||</span> (<span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='op'>+</span> <span class='ident'>text</span>.<span class='ident'>len</span>()) <span class='op'>&gt;</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>capacity</span>() {
         <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
     }
     <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>==</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
@@ -1740,13 +1749,12 @@
 
 <span class='doccomment'>/// Move cursor on the right.</span>
 <span class='kw'>fn</span> <span class='ident'>edit_move_right</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>!=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
-        <span class='kw'>let</span> <span class='ident'>ch</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>char_at</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='ident'>ch</span>.<span class='ident'>len_utf8</span>();
-        <span class='ident'>s</span>.<span class='ident'>refresh_line</span>()
-    } <span class='kw'>else</span> {
-        <span class='prelude-val'>Ok</span>(())
+    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>==</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
+        <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
     }
+    <span class='kw'>let</span> <span class='ident'>ch</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>char_at</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>);
+    <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='ident'>ch</span>.<span class='ident'>len_utf8</span>();
+    <span class='ident'>s</span>.<span class='ident'>refresh_line</span>()
 }
 
 <span class='doccomment'>/// Move cursor to the start of the line.</span>
@@ -1761,18 +1769,17 @@
 
 <span class='doccomment'>/// Move cursor to the end of the line.</span>
 <span class='kw'>fn</span> <span class='ident'>edit_move_end</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>!=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
-        <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>();
-        <span class='ident'>s</span>.<span class='ident'>refresh_line</span>()
-    } <span class='kw'>else</span> {
-        <span class='prelude-val'>Ok</span>(())
+    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>==</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
+        <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
     }
+    <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>();
+    <span class='ident'>s</span>.<span class='ident'>refresh_line</span>()
 }
 
 <span class='doccomment'>/// Delete the character at the right of the cursor without altering the cursor</span>
 <span class='doccomment'>/// position. Basically this is what happens with the &quot;Delete&quot; keyboard key.</span>
 <span class='kw'>fn</span> <span class='ident'>edit_delete</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
+    <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>is_empty</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
         <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>remove</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>);
         <span class='ident'>s</span>.<span class='ident'>refresh_line</span>()
     } <span class='kw'>else</span> {
@@ -1782,7 +1789,7 @@
 
 <span class='doccomment'>/// Backspace implementation.</span>
 <span class='kw'>fn</span> <span class='ident'>edit_backspace</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> {
+    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>is_empty</span>() {
         <span class='kw'>let</span> <span class='ident'>ch</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>char_at_reverse</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>);
         <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>-=</span> <span class='ident'>ch</span>.<span class='ident'>len_utf8</span>();
         <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>remove</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>);
@@ -1794,7 +1801,7 @@
 
 <span class='doccomment'>/// Kill the text from point to the end of the line.</span>
 <span class='kw'>fn</span> <span class='ident'>edit_kill_line</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span> {
-    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
+    <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>is_empty</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
         <span class='kw'>let</span> <span class='ident'>text</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>drain</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>..).<span class='ident'>collect</span>();
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>refresh_line</span>());
         <span class='prelude-val'>Ok</span>(<span class='prelude-val'>Some</span>(<span class='ident'>text</span>))
@@ -1805,7 +1812,7 @@
 
 <span class='doccomment'>/// Kill backward from point to the beginning of the line.</span>
 <span class='kw'>fn</span> <span class='ident'>edit_discard_line</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span> {
-    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> {
+    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>is_empty</span>() {
         <span class='kw'>let</span> <span class='ident'>text</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>drain</span>(..<span class='ident'>s</span>.<span class='ident'>pos</span>).<span class='ident'>collect</span>();
         <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>refresh_line</span>());
@@ -1821,17 +1828,15 @@
         <span class='comment'>// TODO should work even if s.pos == s.buf.len()</span>
         <span class='kw'>let</span> <span class='ident'>ch</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>remove</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>);
         <span class='kw'>let</span> <span class='ident'>size</span> <span class='op'>=</span> <span class='ident'>ch</span>.<span class='ident'>len_utf8</span>();
-        <span class='kw'>let</span> <span class='ident'>och</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>char_at_reverse</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='kw'>let</span> <span class='ident'>osize</span> <span class='op'>=</span> <span class='ident'>och</span>.<span class='ident'>len_utf8</span>();
-        <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>insert</span>(<span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>-</span> <span class='ident'>osize</span>, <span class='ident'>ch</span>);
+        <span class='kw'>let</span> <span class='ident'>other_ch</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>char_at_reverse</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>);
+        <span class='kw'>let</span> <span class='ident'>other_size</span> <span class='op'>=</span> <span class='ident'>other_ch</span>.<span class='ident'>len_utf8</span>();
+        <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>insert</span>(<span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>-</span> <span class='ident'>other_size</span>, <span class='ident'>ch</span>);
         <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>!=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='ident'>size</span> {
             <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='ident'>size</span>;
+        } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>size</span> <span class='op'>&gt;=</span> <span class='ident'>other_size</span> {
+            <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='ident'>size</span> <span class='op'>-</span> <span class='ident'>other_size</span>;
         } <span class='kw'>else</span> {
-            <span class='kw'>if</span> <span class='ident'>size</span> <span class='op'>&gt;=</span> <span class='ident'>osize</span> {
-                <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='ident'>size</span> <span class='op'>-</span> <span class='ident'>osize</span>;
-            } <span class='kw'>else</span> {
-                <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>-=</span> <span class='ident'>osize</span> <span class='op'>-</span> <span class='ident'>size</span>;
-            }
+            <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>-=</span> <span class='ident'>other_size</span> <span class='op'>-</span> <span class='ident'>size</span>;
         }
         <span class='ident'>s</span>.<span class='ident'>refresh_line</span>()
     } <span class='kw'>else</span> {
@@ -1889,34 +1894,33 @@
 <span class='doccomment'>/// Substitute the currently edited line with the next or previous history</span>
 <span class='doccomment'>/// entry.</span>
 <span class='kw'>fn</span> <span class='ident'>edit_history_next</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>, <span class='ident'>history</span>: <span class='kw-2'>&amp;</span><span class='ident'>History</span>, <span class='ident'>prev</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>if</span> <span class='ident'>history</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> {
-        <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>history_index</span> <span class='op'>==</span> <span class='ident'>history</span>.<span class='ident'>len</span>() {
-            <span class='kw'>if</span> <span class='ident'>prev</span> {
-                <span class='comment'>// Save the current edited line before to overwrite it</span>
-                <span class='ident'>s</span>.<span class='ident'>history_end</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>clone</span>();
-            } <span class='kw'>else</span> {
-                <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
-            }
-        } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>history_index</span> <span class='op'>==</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>prev</span> {
+    <span class='kw'>if</span> <span class='ident'>history</span>.<span class='ident'>is_empty</span>() {
+        <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
+    }
+    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>history_index</span> <span class='op'>==</span> <span class='ident'>history</span>.<span class='ident'>len</span>() {
+        <span class='kw'>if</span> <span class='ident'>prev</span> {
+            <span class='comment'>// Save the current edited line before to overwrite it</span>
+            <span class='ident'>s</span>.<span class='ident'>history_end</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>clone</span>();
+        } <span class='kw'>else</span> {
             <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
         }
-        <span class='kw'>if</span> <span class='ident'>prev</span> {
-            <span class='ident'>s</span>.<span class='ident'>history_index</span> <span class='op'>-=</span> <span class='number'>1</span>;
-        } <span class='kw'>else</span> {
-            <span class='ident'>s</span>.<span class='ident'>history_index</span> <span class='op'>+=</span> <span class='number'>1</span>;
-        }
-        <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>history_index</span> <span class='op'>&lt;</span> <span class='ident'>history</span>.<span class='ident'>len</span>() {
-            <span class='kw'>let</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>history</span>.<span class='ident'>get</span>(<span class='ident'>s</span>.<span class='ident'>history_index</span>).<span class='ident'>unwrap</span>();
-            <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='ident'>buf</span>.<span class='ident'>clone</span>());
-        } <span class='kw'>else</span> {
-            <span class='kw'>let</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>history_end</span>.<span class='ident'>clone</span>(); <span class='comment'>// TODO how to avoid cloning?</span>
-            <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='ident'>buf</span>);
-        };
-        <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>();
-        <span class='ident'>s</span>.<span class='ident'>refresh_line</span>()
-    } <span class='kw'>else</span> {
-        <span class='prelude-val'>Ok</span>(())
+    } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>history_index</span> <span class='op'>==</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>prev</span> {
+        <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
     }
+    <span class='kw'>if</span> <span class='ident'>prev</span> {
+        <span class='ident'>s</span>.<span class='ident'>history_index</span> <span class='op'>-=</span> <span class='number'>1</span>;
+    } <span class='kw'>else</span> {
+        <span class='ident'>s</span>.<span class='ident'>history_index</span> <span class='op'>+=</span> <span class='number'>1</span>;
+    }
+    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>history_index</span> <span class='op'>&lt;</span> <span class='ident'>history</span>.<span class='ident'>len</span>() {
+        <span class='kw'>let</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>history</span>.<span class='ident'>get</span>(<span class='ident'>s</span>.<span class='ident'>history_index</span>).<span class='ident'>unwrap</span>();
+        <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='ident'>buf</span>.<span class='ident'>clone</span>());
+    } <span class='kw'>else</span> {
+        <span class='kw'>let</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>history_end</span>.<span class='ident'>clone</span>(); <span class='comment'>// TODO how to avoid cloning?</span>
+        <span class='ident'>s</span>.<span class='ident'>update_buf</span>(<span class='ident'>buf</span>);
+    };
+    <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>();
+    <span class='ident'>s</span>.<span class='ident'>refresh_line</span>()
 }
 
 <span class='doccomment'>/// Completes the line/word</span>
@@ -1978,6 +1982,7 @@
 }
 
 <span class='doccomment'>/// Incremental search</span>
+<span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;clippy&quot;</span>, <span class='ident'>allow</span>(<span class='ident'>if_not_else</span>))]</span>
 <span class='kw'>fn</span> <span class='ident'>reverse_incremental_search</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>io</span>::<span class='ident'>Read</span><span class='op'>&gt;</span>(<span class='ident'>chars</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>io</span>::<span class='ident'>Chars</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>,
                                            <span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>,
                                            <span class='ident'>history</span>: <span class='kw-2'>&amp;</span><span class='ident'>History</span>)
@@ -1994,9 +1999,10 @@
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>key</span>;
     <span class='comment'>// Display the reverse-i-search prompt and process chars</span>
     <span class='kw'>loop</span> {
-        <span class='kw'>let</span> <span class='ident'>prompt</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>success</span> {
-            <span class='boolval'>true</span> <span class='op'>=&gt;</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;(reverse-i-search)`{}&#39;: &quot;</span>, <span class='ident'>search_buf</span>),
-            <span class='boolval'>false</span> <span class='op'>=&gt;</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;(failed reverse-i-search)`{}&#39;: &quot;</span>, <span class='ident'>search_buf</span>),
+        <span class='kw'>let</span> <span class='ident'>prompt</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>success</span> {
+            <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;(reverse-i-search)`{}&#39;: &quot;</span>, <span class='ident'>search_buf</span>)
+        } <span class='kw'>else</span> {
+            <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;(failed reverse-i-search)`{}&#39;: &quot;</span>, <span class='ident'>search_buf</span>)
         };
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>refresh_prompt_and_line</span>(<span class='kw-2'>&amp;</span><span class='ident'>prompt</span>));
 
@@ -2109,6 +2115,7 @@
 <span class='doccomment'>/// Handles reading and editting the readline buffer.</span>
 <span class='doccomment'>/// It will also handle special inputs in an appropriate fashion</span>
 <span class='doccomment'>/// (e.g., C-c will exit readline)</span>
+<span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;clippy&quot;</span>, <span class='ident'>allow</span>(<span class='ident'>cyclomatic_complexity</span>))]</span>
 <span class='kw'>fn</span> <span class='ident'>readline_edit</span>(<span class='ident'>prompt</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>,
                  <span class='ident'>history</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>History</span>,
                  <span class='ident'>completer</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>Completer</span><span class='op'>&gt;</span>,
@@ -2184,11 +2191,11 @@
             }
             <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_D</span> <span class='op'>=&gt;</span> {
                 <span class='ident'>kill_ring</span>.<span class='ident'>reset</span>();
-                <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> {
+                <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>is_empty</span>() {
+                    <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>error</span>::<span class='ident'>ReadlineError</span>::<span class='ident'>Eof</span>);
+                } <span class='kw'>else</span> {
                     <span class='comment'>// Delete (forward) one character at point.</span>
                     <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_delete</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>))
-                } <span class='kw'>else</span> {
-                    <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>error</span>::<span class='ident'>ReadlineError</span>::<span class='ident'>Eof</span>);
                 }
             }
             <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_E</span> <span class='op'>=&gt;</span> {
@@ -2308,7 +2315,7 @@
     }
 }
 
-<span class='doccomment'>/// Readline method that will enable RAW mode, call the ```readline_edit()```</span>
+<span class='doccomment'>/// Readline method that will enable RAW mode, call the `readline_edit()`</span>
 <span class='doccomment'>/// method and disable raw mode</span>
 <span class='kw'>fn</span> <span class='ident'>readline_raw</span>(<span class='ident'>prompt</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>,
                 <span class='ident'>history</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>History</span>,
@@ -2362,6 +2369,7 @@
     }
 
     <span class='doccomment'>/// This method will read a line from STDIN and will display a `prompt`</span>
+    <span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;clippy&quot;</span>, <span class='ident'>allow</span>(<span class='ident'>if_not_else</span>))]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>readline</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>prompt</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span> {
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>unsupported_term</span> {
             <span class='comment'>// Write prompt and flush it to stdout</span>
@@ -2408,6 +2416,12 @@
     <span class='doccomment'>/// Register a callback function to be called for tab-completion.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_completer</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>completer</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;completer</span> <span class='ident'>Completer</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>completer</span> <span class='op'>=</span> <span class='ident'>completer</span>;
+    }
+}
+
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;completer</span><span class='op'>&gt;</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>Editor</span><span class='op'>&lt;</span><span class='lifetime'>&#39;completer</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>Editor</span><span class='op'>&lt;</span><span class='lifetime'>&#39;completer</span><span class='op'>&gt;</span> {
+        <span class='ident'>Editor</span>::<span class='ident'>new</span>()
     }
 }
 
@@ -2575,28 +2589,28 @@
         <span class='ident'>s</span>.<span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>from</span>(<span class='ident'>line</span>);
 
         <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>2</span> {
-            <span class='ident'>super</span>::<span class='ident'>edit_history_next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>history</span>, <span class='boolval'>false</span>).<span class='ident'>unwrap</span>();
+            <span class='ident'>super</span>::<span class='ident'>edit_history_next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='kw-2'>&amp;</span><span class='ident'>history</span>, <span class='boolval'>false</span>).<span class='ident'>unwrap</span>();
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>line</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         }
 
-        <span class='ident'>super</span>::<span class='ident'>edit_history_next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>history</span>, <span class='boolval'>true</span>).<span class='ident'>unwrap</span>();
+        <span class='ident'>super</span>::<span class='ident'>edit_history_next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='kw-2'>&amp;</span><span class='ident'>history</span>, <span class='boolval'>true</span>).<span class='ident'>unwrap</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>line</span>, <span class='ident'>s</span>.<span class='ident'>history_end</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>1</span>, <span class='ident'>s</span>.<span class='ident'>history_index</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;line1&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
 
         <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>2</span> {
-            <span class='ident'>super</span>::<span class='ident'>edit_history_next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>history</span>, <span class='boolval'>true</span>).<span class='ident'>unwrap</span>();
+            <span class='ident'>super</span>::<span class='ident'>edit_history_next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='kw-2'>&amp;</span><span class='ident'>history</span>, <span class='boolval'>true</span>).<span class='ident'>unwrap</span>();
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>line</span>, <span class='ident'>s</span>.<span class='ident'>history_end</span>);
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>s</span>.<span class='ident'>history_index</span>);
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;line0&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         }
 
-        <span class='ident'>super</span>::<span class='ident'>edit_history_next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>history</span>, <span class='boolval'>false</span>).<span class='ident'>unwrap</span>();
+        <span class='ident'>super</span>::<span class='ident'>edit_history_next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='kw-2'>&amp;</span><span class='ident'>history</span>, <span class='boolval'>false</span>).<span class='ident'>unwrap</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>line</span>, <span class='ident'>s</span>.<span class='ident'>history_end</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>1</span>, <span class='ident'>s</span>.<span class='ident'>history_index</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;line1&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
 
-        <span class='ident'>super</span>::<span class='ident'>edit_history_next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>history</span>, <span class='boolval'>false</span>).<span class='ident'>unwrap</span>();
+        <span class='ident'>super</span>::<span class='ident'>edit_history_next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='kw-2'>&amp;</span><span class='ident'>history</span>, <span class='boolval'>false</span>).<span class='ident'>unwrap</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>line</span>, <span class='ident'>s</span>.<span class='ident'>history_end</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>2</span>, <span class='ident'>s</span>.<span class='ident'>history_index</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>line</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);

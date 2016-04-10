@@ -108,6 +108,7 @@
 <span id="64">64</span>
 <span id="65">65</span>
 <span id="66">66</span>
+<span id="67">67</span>
 </pre><pre class='rust '>
 
 
@@ -145,6 +146,7 @@
     <span class='ident'>ESC_Y</span>,
 }
 
+<span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;clippy&quot;</span>, <span class='ident'>allow</span>(<span class='ident'>match_same_arms</span>))]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>char_to_key_press</span>(<span class='ident'>c</span>: <span class='ident'>char</span>) <span class='op'>-&gt;</span> <span class='ident'>KeyPress</span> {
     <span class='kw'>match</span> <span class='ident'>c</span> {
         <span class='string'>&#39;\x00&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>NULL</span>,
