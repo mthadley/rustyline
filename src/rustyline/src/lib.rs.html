@@ -1309,6 +1309,33 @@
 <span id="1265">1265</span>
 <span id="1266">1266</span>
 <span id="1267">1267</span>
+<span id="1268">1268</span>
+<span id="1269">1269</span>
+<span id="1270">1270</span>
+<span id="1271">1271</span>
+<span id="1272">1272</span>
+<span id="1273">1273</span>
+<span id="1274">1274</span>
+<span id="1275">1275</span>
+<span id="1276">1276</span>
+<span id="1277">1277</span>
+<span id="1278">1278</span>
+<span id="1279">1279</span>
+<span id="1280">1280</span>
+<span id="1281">1281</span>
+<span id="1282">1282</span>
+<span id="1283">1283</span>
+<span id="1284">1284</span>
+<span id="1285">1285</span>
+<span id="1286">1286</span>
+<span id="1287">1287</span>
+<span id="1288">1288</span>
+<span id="1289">1289</span>
+<span id="1290">1290</span>
+<span id="1291">1291</span>
+<span id="1292">1292</span>
+<span id="1293">1293</span>
+<span id="1294">1294</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Readline for Rust</span>
 <span class='doccomment'>//!</span>
@@ -1344,6 +1371,8 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>, <span class='ident'>Read</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::<span class='ident'>Path</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>;
 <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>errno</span>::<span class='ident'>Errno</span>;
 <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>sys</span>::<span class='ident'>signal</span>;
 <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>sys</span>::<span class='ident'>termios</span>;
@@ -1480,9 +1509,9 @@
 <span class='doccomment'>/// Unsupported Terminals that don&#39;t support RAW mode</span>
 <span class='kw'>static</span> <span class='ident'>UNSUPPORTED_TERM</span>: [<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>; <span class='number'>3</span>] <span class='op'>=</span> [<span class='string'>&quot;dumb&quot;</span>, <span class='string'>&quot;cons25&quot;</span>, <span class='string'>&quot;emacs&quot;</span>];
 
-<span class='doccomment'>/// Check to see if STDIN is a TTY</span>
-<span class='kw'>fn</span> <span class='ident'>is_a_tty</span>() <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-    <span class='kw'>let</span> <span class='ident'>isatty</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>isatty</span>(<span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span> <span class='kw'>as</span> <span class='ident'>i32</span>) } <span class='op'>!=</span> <span class='number'>0</span>;
+<span class='doccomment'>/// Check to see if `fd` is a TTY</span>
+<span class='kw'>fn</span> <span class='ident'>is_a_tty</span>(<span class='ident'>fd</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+    <span class='kw'>let</span> <span class='ident'>isatty</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>isatty</span>(<span class='ident'>fd</span>) } <span class='op'>!=</span> <span class='number'>0</span>;
     <span class='ident'>isatty</span>
 }
 
@@ -1509,7 +1538,7 @@
 <span class='kw'>fn</span> <span class='ident'>enable_raw_mode</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>termios</span>::<span class='ident'>Termios</span><span class='op'>&gt;</span> {
     <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>sys</span>::<span class='ident'>termios</span>::{<span class='ident'>BRKINT</span>, <span class='ident'>ICRNL</span>, <span class='ident'>INPCK</span>, <span class='ident'>ISTRIP</span>, <span class='ident'>IXON</span>, <span class='ident'>OPOST</span>, <span class='ident'>CS8</span>, <span class='ident'>ECHO</span>, <span class='ident'>ICANON</span>, <span class='ident'>IEXTEN</span>,
                             <span class='ident'>ISIG</span>, <span class='ident'>VMIN</span>, <span class='ident'>VTIME</span>};
-    <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>is_a_tty</span>() {
+    <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>is_a_tty</span>(<span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>) {
         <span class='prelude-val'>Err</span>(<span class='ident'>from_errno</span>(<span class='ident'>Errno</span>::<span class='ident'>ENOTTY</span>))
     } <span class='kw'>else</span> {
         <span class='kw'>let</span> <span class='ident'>original_term</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcgetattr</span>(<span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>));
@@ -2094,7 +2123,13 @@
     <span class='kw'>let</span> <span class='ident'>stdin</span> <span class='op'>=</span> <span class='ident'>io</span>::<span class='ident'>stdin</span>();
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chars</span> <span class='op'>=</span> <span class='ident'>stdin</span>.<span class='ident'>lock</span>().<span class='ident'>chars</span>();
     <span class='kw'>loop</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ch</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>chars</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>()); <span class='comment'>// FIXME unwrap</span>
+        <span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>chars</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>();
+        <span class='kw'>if</span> <span class='ident'>c</span>.<span class='ident'>is_err</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>SIGWINCH</span>.<span class='ident'>compare_and_swap</span>(<span class='boolval'>true</span>, <span class='boolval'>false</span>, <span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>) {
+            <span class='ident'>s</span>.<span class='ident'>cols</span> <span class='op'>=</span> <span class='ident'>get_columns</span>();
+            <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>refresh_line</span>());
+            <span class='kw'>continue</span>;
+        }
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ch</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>c</span>);
         <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>ch</span>.<span class='ident'>is_control</span>() {
             <span class='ident'>kill_ring</span>.<span class='ident'>reset</span>();
             <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_insert</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='ident'>ch</span>));
@@ -2301,6 +2336,7 @@
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Editor</span><span class='op'>&lt;</span><span class='lifetime'>&#39;completer</span><span class='op'>&gt;</span> {
     <span class='ident'>unsupported_term</span>: <span class='ident'>bool</span>,
     <span class='ident'>stdin_isatty</span>: <span class='ident'>bool</span>,
+    <span class='ident'>stdout_isatty</span>: <span class='ident'>bool</span>,
     <span class='comment'>// cols: usize, // Number of columns in terminal</span>
     <span class='ident'>history</span>: <span class='ident'>History</span>,
     <span class='ident'>completer</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;completer</span> <span class='ident'>Completer</span><span class='op'>&gt;</span>,
@@ -2311,14 +2347,18 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Editor</span><span class='op'>&lt;</span><span class='lifetime'>&#39;completer</span><span class='op'>&gt;</span> {
         <span class='comment'>// TODO check what is done in rl_initialize()</span>
         <span class='comment'>// if the number of columns is stored here, we need a SIGWINCH handler...</span>
-        <span class='comment'>// if enable_raw_mode is called here, we need to implement Drop to reset the terminal in its original state...</span>
-        <span class='ident'>Editor</span> {
+        <span class='kw'>let</span> <span class='ident'>editor</span> <span class='op'>=</span> <span class='ident'>Editor</span> {
             <span class='ident'>unsupported_term</span>: <span class='ident'>is_unsupported_term</span>(),
-            <span class='ident'>stdin_isatty</span>: <span class='ident'>is_a_tty</span>(),
+            <span class='ident'>stdin_isatty</span>: <span class='ident'>is_a_tty</span>(<span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>),
+            <span class='ident'>stdout_isatty</span>: <span class='ident'>is_a_tty</span>(<span class='ident'>libc</span>::<span class='ident'>STDOUT_FILENO</span>),
             <span class='ident'>history</span>: <span class='ident'>History</span>::<span class='ident'>new</span>(),
             <span class='ident'>completer</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>kill_ring</span>: <span class='ident'>KillRing</span>::<span class='ident'>new</span>(<span class='number'>60</span>),
+        };
+        <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>editor</span>.<span class='ident'>unsupported_term</span> <span class='op'>&amp;&amp;</span> <span class='ident'>editor</span>.<span class='ident'>stdin_isatty</span> <span class='op'>&amp;&amp;</span> <span class='ident'>editor</span>.<span class='ident'>stdout_isatty</span> {
+            <span class='ident'>install_sigwinch_handler</span>();
         }
+        <span class='ident'>editor</span>
     }
 
     <span class='doccomment'>/// This method will read a line from STDIN and will display a `prompt`</span>
@@ -2378,6 +2418,20 @@
          .<span class='ident'>field</span>(<span class='string'>&quot;stdin_isatty&quot;</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>stdin_isatty</span>)
          .<span class='ident'>finish</span>()
     }
+}
+
+<span class='kw'>static</span> <span class='ident'>SIGWINCH_ONCE</span>: <span class='ident'>sync</span>::<span class='ident'>Once</span> <span class='op'>=</span> <span class='ident'>sync</span>::<span class='ident'>ONCE_INIT</span>;
+<span class='kw'>static</span> <span class='ident'>SIGWINCH</span>: <span class='ident'>atomic</span>::<span class='ident'>AtomicBool</span> <span class='op'>=</span> <span class='ident'>atomic</span>::<span class='ident'>ATOMIC_BOOL_INIT</span>;
+<span class='kw'>fn</span> <span class='ident'>install_sigwinch_handler</span>() {
+    <span class='ident'>SIGWINCH_ONCE</span>.<span class='ident'>call_once</span>(<span class='op'>||</span> <span class='kw'>unsafe</span> {
+        <span class='kw'>let</span> <span class='ident'>sigwinch</span> <span class='op'>=</span> <span class='ident'>signal</span>::<span class='ident'>SigAction</span>::<span class='ident'>new</span>(<span class='ident'>signal</span>::<span class='ident'>SigHandler</span>::<span class='ident'>Handler</span>(<span class='ident'>sigwinch_handler</span>),
+                                              <span class='ident'>signal</span>::<span class='ident'>SaFlag</span>::<span class='ident'>empty</span>(),
+                                              <span class='ident'>signal</span>::<span class='ident'>SigSet</span>::<span class='ident'>empty</span>());
+        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>signal</span>::<span class='ident'>sigaction</span>(<span class='ident'>signal</span>::<span class='ident'>SIGWINCH</span>, <span class='kw-2'>&amp;</span><span class='ident'>sigwinch</span>);
+    });
+}
+<span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span> <span class='ident'>sigwinch_handler</span>(_: <span class='ident'>signal</span>::<span class='ident'>SigNum</span>) {
+    <span class='ident'>SIGWINCH</span>.<span class='ident'>store</span>(<span class='boolval'>true</span>, <span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>);
 }
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
