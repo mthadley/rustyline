@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -1203,6 +1204,48 @@
 <span id="1160">1160</span>
 <span id="1161">1161</span>
 <span id="1162">1162</span>
+<span id="1163">1163</span>
+<span id="1164">1164</span>
+<span id="1165">1165</span>
+<span id="1166">1166</span>
+<span id="1167">1167</span>
+<span id="1168">1168</span>
+<span id="1169">1169</span>
+<span id="1170">1170</span>
+<span id="1171">1171</span>
+<span id="1172">1172</span>
+<span id="1173">1173</span>
+<span id="1174">1174</span>
+<span id="1175">1175</span>
+<span id="1176">1176</span>
+<span id="1177">1177</span>
+<span id="1178">1178</span>
+<span id="1179">1179</span>
+<span id="1180">1180</span>
+<span id="1181">1181</span>
+<span id="1182">1182</span>
+<span id="1183">1183</span>
+<span id="1184">1184</span>
+<span id="1185">1185</span>
+<span id="1186">1186</span>
+<span id="1187">1187</span>
+<span id="1188">1188</span>
+<span id="1189">1189</span>
+<span id="1190">1190</span>
+<span id="1191">1191</span>
+<span id="1192">1192</span>
+<span id="1193">1193</span>
+<span id="1194">1194</span>
+<span id="1195">1195</span>
+<span id="1196">1196</span>
+<span id="1197">1197</span>
+<span id="1198">1198</span>
+<span id="1199">1199</span>
+<span id="1200">1200</span>
+<span id="1201">1201</span>
+<span id="1202">1202</span>
+<span id="1203">1203</span>
+<span id="1204">1204</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Readline for Rust</span>
 <span class='doccomment'>//!</span>
@@ -1658,21 +1701,44 @@
 
 <span class='doccomment'>/// Delete the previous word, maintaining the cursor at the start of the</span>
 <span class='doccomment'>/// current word.</span>
-<span class='kw'>fn</span> <span class='ident'>edit_delete_prev_word</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span> {
+<span class='kw'>fn</span> <span class='ident'>edit_delete_prev_word</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>, <span class='ident'>test</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span>
+    <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='ident'>char</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>
+{
     <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
         <span class='kw'>let</span> <span class='ident'>old_pos</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>pos</span>;
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ch</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>char_at_reverse</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>);
         <span class='comment'>// eat any spaces on the left</span>
-        <span class='kw'>while</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>ch</span>.<span class='ident'>is_whitespace</span>() {
+        <span class='kw'>while</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>test</span>(<span class='ident'>ch</span>) {
             <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>-=</span> <span class='ident'>ch</span>.<span class='ident'>len_utf8</span>();
             <span class='ident'>ch</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>char_at_reverse</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>);
         }
         <span class='comment'>// eat any non-spaces on the left</span>
-        <span class='kw'>while</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>ch</span>.<span class='ident'>is_whitespace</span>() {
+        <span class='kw'>while</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>test</span>(<span class='ident'>ch</span>) {
             <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>-=</span> <span class='ident'>ch</span>.<span class='ident'>len_utf8</span>();
             <span class='ident'>ch</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>char_at_reverse</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>);
         }
         <span class='kw'>let</span> <span class='ident'>text</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>drain</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>..<span class='ident'>old_pos</span>).<span class='ident'>collect</span>();
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>refresh_line</span>());
+        <span class='prelude-val'>Ok</span>(<span class='prelude-val'>Some</span>(<span class='ident'>text</span>))
+    } <span class='kw'>else</span> {
+        <span class='prelude-val'>Ok</span>(<span class='prelude-val'>None</span>)
+    }
+}
+
+<span class='doccomment'>/// Kill from the cursor to the end of the current word, or, if between words, to the end of the next word.</span>
+<span class='kw'>fn</span> <span class='ident'>edit_delete_word</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>State</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span> {
+    <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>pos</span>;
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ch</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>char_at</span>(<span class='ident'>pos</span>);
+        <span class='kw'>while</span> <span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>ch</span>.<span class='ident'>is_alphanumeric</span>() {
+            <span class='ident'>pos</span> <span class='op'>+=</span> <span class='ident'>ch</span>.<span class='ident'>len_utf8</span>();
+            <span class='ident'>ch</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>char_at</span>(<span class='ident'>pos</span>);
+        }
+        <span class='kw'>while</span> <span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>ch</span>.<span class='ident'>is_alphanumeric</span>() {
+            <span class='ident'>pos</span> <span class='op'>+=</span> <span class='ident'>ch</span>.<span class='ident'>len_utf8</span>();
+            <span class='ident'>ch</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>char_at</span>(<span class='ident'>pos</span>);
+        }
+        <span class='kw'>let</span> <span class='ident'>text</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>buf</span>.<span class='ident'>drain</span>(<span class='ident'>s</span>.<span class='ident'>pos</span>..<span class='ident'>pos</span>).<span class='ident'>collect</span>();
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>refresh_line</span>());
         <span class='prelude-val'>Ok</span>(<span class='prelude-val'>Some</span>(<span class='ident'>text</span>))
     } <span class='kw'>else</span> {
@@ -1879,7 +1945,6 @@
     } <span class='kw'>else</span> {
         <span class='comment'>// TODO ESC-B (b): move backward a word (https://github.com/antirez/linenoise/pull/64, https://github.com/antirez/linenoise/pull/6)</span>
         <span class='comment'>// TODO ESC-C (c): capitalize word after point</span>
-        <span class='comment'>// TODO ESC-D (d): kill one word forward</span>
         <span class='comment'>// TODO ESC-F (f): move forward a word</span>
         <span class='comment'>// TODO ESC-L (l): lowercase word after point</span>
         <span class='comment'>// TODO ESC-N (n): search history forward not interactively</span>
@@ -1887,11 +1952,12 @@
         <span class='comment'>// TODO ESC-R (r): Undo all changes made to this line.</span>
         <span class='comment'>// TODO EST-T (t): transpose words</span>
         <span class='comment'>// TODO ESC-U (u): uppercase word after point</span>
-        <span class='comment'>// TODO ESC-CTRl-H | ESC-BACKSPACE kill one word backward</span>
         <span class='comment'>// TODO ESC-&lt;: move to first entry in history</span>
         <span class='comment'>// TODO ESC-&gt;: move to last entry in history</span>
         <span class='kw'>match</span> <span class='ident'>seq1</span> {
+            <span class='string'>&#39;d&#39;</span> <span class='op'>|</span> <span class='string'>&#39;D&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>ESC_D</span>),
             <span class='string'>&#39;y&#39;</span> <span class='op'>|</span> <span class='string'>&#39;Y&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>ESC_Y</span>),
+            <span class='string'>&#39;\x08&#39;</span> <span class='op'>|</span> <span class='string'>&#39;\x7f&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>ESC_BACKSPACE</span>),
             _ <span class='op'>=&gt;</span> {
                 <span class='macro'>writeln</span><span class='macro'>!</span>(<span class='ident'>io</span>::<span class='ident'>stderr</span>(), <span class='string'>&quot;key: {:?}, seq1, {:?}&quot;</span>, <span class='ident'>KeyPress</span>::<span class='ident'>ESC</span>, <span class='ident'>seq1</span>).<span class='ident'>unwrap</span>();
                 <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>UNKNOWN_ESC_SEQ</span>)
@@ -2000,9 +2066,8 @@
             }
             <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_K</span> <span class='op'>=&gt;</span> {
                 <span class='comment'>// Kill the text from point to the end of the line.</span>
-                <span class='kw'>match</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_kill_line</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>)) {
-                    <span class='prelude-val'>Some</span>(<span class='ident'>text</span>) <span class='op'>=&gt;</span> <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='kw-2'>&amp;</span><span class='ident'>text</span>, <span class='boolval'>true</span>),
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> (),
+                <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>text</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_kill_line</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>)) {
+                    <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='kw-2'>&amp;</span><span class='ident'>text</span>, <span class='boolval'>true</span>)
                 }
             }
             <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_L</span> <span class='op'>=&gt;</span> {
@@ -2027,31 +2092,41 @@
             }
             <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_U</span> <span class='op'>=&gt;</span> {
                 <span class='comment'>// Kill backward from point to the beginning of the line.</span>
-                <span class='kw'>match</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_discard_line</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>)) {
-                    <span class='prelude-val'>Some</span>(<span class='ident'>text</span>) <span class='op'>=&gt;</span> <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='kw-2'>&amp;</span><span class='ident'>text</span>, <span class='boolval'>false</span>),
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> (),
+                <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>text</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_discard_line</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>)) {
+                    <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='kw-2'>&amp;</span><span class='ident'>text</span>, <span class='boolval'>false</span>)
                 }
             }
             <span class='comment'>// TODO CTRL_V // Quoted insert</span>
             <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_W</span> <span class='op'>=&gt;</span> {
                 <span class='comment'>// Kill the word behind point, using white space as a word boundary</span>
-                <span class='kw'>match</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_delete_prev_word</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>)) {
-                    <span class='prelude-val'>Some</span>(<span class='ident'>text</span>) <span class='op'>=&gt;</span> <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='kw-2'>&amp;</span><span class='ident'>text</span>, <span class='boolval'>false</span>),
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> (),
+                <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>text</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_delete_prev_word</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='ident'>char</span>::<span class='ident'>is_whitespace</span>)) {
+                    <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='kw-2'>&amp;</span><span class='ident'>text</span>, <span class='boolval'>false</span>)
                 }
             }
             <span class='ident'>KeyPress</span>::<span class='ident'>CTRL_Y</span> <span class='op'>=&gt;</span> {
                 <span class='comment'>// retrieve (yank) last item killed</span>
-                <span class='kw'>match</span> <span class='ident'>kill_ring</span>.<span class='ident'>yank</span>() {
-                    <span class='prelude-val'>Some</span>(<span class='ident'>text</span>) <span class='op'>=&gt;</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_yank</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='ident'>text</span>)),
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> (),
+                <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>text</span>) <span class='op'>=</span> <span class='ident'>kill_ring</span>.<span class='ident'>yank</span>() {
+                    <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_yank</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='ident'>text</span>))
+                }
+            }
+            <span class='ident'>KeyPress</span>::<span class='ident'>ESC_BACKSPACE</span> <span class='op'>=&gt;</span> {
+                <span class='comment'>// kill one word backward</span>
+                <span class='comment'>// Kill from the cursor the start of the current word, or, if between words, to the start of the previous word.</span>
+                <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>text</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_delete_prev_word</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>,
+                                                               <span class='op'>|</span><span class='ident'>ch</span><span class='op'>|</span> <span class='op'>!</span><span class='ident'>ch</span>.<span class='ident'>is_alphanumeric</span>())) {
+                    <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='kw-2'>&amp;</span><span class='ident'>text</span>, <span class='boolval'>false</span>)
+                }
+            }
+            <span class='ident'>KeyPress</span>::<span class='ident'>ESC_D</span> <span class='op'>=&gt;</span> {
+                <span class='comment'>// kill one word forward</span>
+                <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>text</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_delete_word</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>)) {
+                    <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='kw-2'>&amp;</span><span class='ident'>text</span>, <span class='boolval'>true</span>)
                 }
             }
             <span class='ident'>KeyPress</span>::<span class='ident'>ESC_Y</span> <span class='op'>=&gt;</span> {
                 <span class='comment'>// yank-pop</span>
-                <span class='kw'>match</span> <span class='ident'>kill_ring</span>.<span class='ident'>yank_pop</span>() {
-                    <span class='prelude-val'>Some</span>((<span class='ident'>yank_size</span>, <span class='ident'>text</span>)) <span class='op'>=&gt;</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_yank_pop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='ident'>yank_size</span>, <span class='ident'>text</span>)),
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> (),
+                <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>((<span class='ident'>yank_size</span>, <span class='ident'>text</span>)) <span class='op'>=</span> <span class='ident'>kill_ring</span>.<span class='ident'>yank_pop</span>() {
+                    <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>edit_yank_pop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='ident'>yank_size</span>, <span class='ident'>text</span>))
                 }
             }
             <span class='comment'>// TODO CTRL-_ // undo</span>
@@ -2293,10 +2368,20 @@
     <span class='kw'>fn</span> <span class='ident'>delete_prev_word</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>out</span> <span class='op'>=</span> ::<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>sink</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>init_state</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>out</span>, <span class='string'>&quot;a ß  c&quot;</span>, <span class='number'>6</span>, <span class='number'>80</span>);
-        <span class='kw'>let</span> <span class='ident'>text</span> <span class='op'>=</span> <span class='ident'>super</span>::<span class='ident'>edit_delete_prev_word</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>).<span class='ident'>unwrap</span>();
+        <span class='kw'>let</span> <span class='ident'>text</span> <span class='op'>=</span> <span class='ident'>super</span>::<span class='ident'>edit_delete_prev_word</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='ident'>char</span>::<span class='ident'>is_whitespace</span>).<span class='ident'>unwrap</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;a c&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>2</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='prelude-val'>Some</span>(<span class='string'>&quot;ß  &quot;</span>.<span class='ident'>to_string</span>()), <span class='ident'>text</span>);
+    }
+
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>delete_word</span>() {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>out</span> <span class='op'>=</span> ::<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>sink</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>init_state</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>out</span>, <span class='string'>&quot;a ß  c&quot;</span>, <span class='number'>1</span>, <span class='number'>80</span>);
+        <span class='kw'>let</span> <span class='ident'>text</span> <span class='op'>=</span> <span class='ident'>super</span>::<span class='ident'>edit_delete_word</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>).<span class='ident'>unwrap</span>();
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;a  c&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>1</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='prelude-val'>Some</span>(<span class='string'>&quot; ß&quot;</span>.<span class='ident'>to_string</span>()), <span class='ident'>text</span>);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
