@@ -105,12 +105,16 @@
 <span id="61">61</span>
 <span id="62">62</span>
 <span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Contains error type for handling I/O and Errno errors</span>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 <span class='kw'>use</span> <span class='ident'>nix</span>;
+
+<span class='kw'>use</span> <span class='ident'>char_iter</span>;
 
 <span class='doccomment'>/// The error type for Rustyline errors that can arise from</span>
 <span class='doccomment'>/// I/O related errors or Errno when using the nix-rust library</span>
@@ -121,7 +125,7 @@
     <span class='doccomment'>/// Error from syscall</span>
     <span class='ident'>Errno</span>(<span class='ident'>nix</span>::<span class='ident'>Error</span>),
     <span class='doccomment'>/// Chars Error</span>
-    <span class='ident'>Char</span>(<span class='ident'>io</span>::<span class='ident'>CharsError</span>),
+    <span class='ident'>Char</span>(<span class='ident'>char_iter</span>::<span class='ident'>CharsError</span>),
     <span class='doccomment'>/// EOF (Ctrl-d)</span>
     <span class='ident'>Eof</span>,
     <span class='doccomment'>/// Ctrl-C</span>
@@ -164,8 +168,8 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>io</span>::<span class='ident'>CharsError</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>ReadlineError</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>err</span>: <span class='ident'>io</span>::<span class='ident'>CharsError</span>) <span class='op'>-&gt;</span> <span class='ident'>ReadlineError</span> {
+<span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>char_iter</span>::<span class='ident'>CharsError</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>ReadlineError</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>err</span>: <span class='ident'>char_iter</span>::<span class='ident'>CharsError</span>) <span class='op'>-&gt;</span> <span class='ident'>ReadlineError</span> {
         <span class='ident'>ReadlineError</span>::<span class='ident'>Char</span>(<span class='ident'>err</span>)
     }
 }

@@ -177,7 +177,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fs</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::{<span class='self'>self</span>, <span class='ident'>Path</span>};
 
-<span class='kw'>use</span> <span class='kw'>super</span>::<span class='prelude-ty'>Result</span>;
+<span class='kw'>use</span> <span class='ident'>super</span>::<span class='prelude-ty'>Result</span>;
 <span class='kw'>use</span> <span class='ident'>line_buffer</span>::<span class='ident'>LineBuffer</span>;
 
 <span class='comment'>// TODO: let the implementers choose/find word boudaries ???</span>
@@ -295,10 +295,10 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>extract_word</span>() {
-        <span class='kw'>let</span> <span class='ident'>break_chars</span>: <span class='ident'>BTreeSet</span><span class='op'>&lt;</span><span class='ident'>char</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='kw'>super</span>::<span class='ident'>DEFAULT_BREAK_CHARS</span>.<span class='ident'>iter</span>().<span class='ident'>cloned</span>().<span class='ident'>collect</span>();
+        <span class='kw'>let</span> <span class='ident'>break_chars</span>: <span class='ident'>BTreeSet</span><span class='op'>&lt;</span><span class='ident'>char</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>super</span>::<span class='ident'>DEFAULT_BREAK_CHARS</span>.<span class='ident'>iter</span>().<span class='ident'>cloned</span>().<span class='ident'>collect</span>();
         <span class='kw'>let</span> <span class='ident'>line</span> <span class='op'>=</span> <span class='string'>&quot;ls &#39;/usr/local/b&quot;</span>;
         <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>4</span>, <span class='string'>&quot;/usr/local/b&quot;</span>),
-                   <span class='kw'>super</span>::<span class='ident'>extract_word</span>(<span class='ident'>line</span>, <span class='ident'>line</span>.<span class='ident'>len</span>(), <span class='kw-2'>&amp;</span><span class='ident'>break_chars</span>));
+                   <span class='ident'>super</span>::<span class='ident'>extract_word</span>(<span class='ident'>line</span>, <span class='ident'>line</span>.<span class='ident'>len</span>(), <span class='kw-2'>&amp;</span><span class='ident'>break_chars</span>));
     }
 }
 </pre>
