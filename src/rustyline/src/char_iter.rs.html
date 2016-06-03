@@ -148,10 +148,12 @@
 <span id="104">104</span>
 <span id="105">105</span>
 <span id="106">106</span>
+<span id="107">107</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! An iterator over the `char`s of a reader.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! A copy of the unstable code from the stdlib&#39;s std::io::Read::chars.</span>
+<span class='doccomment'>//! TODO: Remove this once [Read::chars](https://github.com/rust-lang/rust/issues/27802) has been stabilized</span>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
@@ -279,8 +281,6 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
