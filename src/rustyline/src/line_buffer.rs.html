@@ -815,9 +815,9 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>move_left</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>ch</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>char_before_cursor</span>() {
             <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>-=</span> <span class='ident'>ch</span>.<span class='ident'>len_utf8</span>();
-            <span class='boolval'>true</span>
+            <span class='boolvalue'>true</span>
         } <span class='kw'>else</span> {
-            <span class='boolval'>false</span>
+            <span class='boolvalue'>false</span>
         }
     }
 
@@ -825,9 +825,9 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>move_right</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>ch</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>char_at_cursor</span>() {
             <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='ident'>ch</span>.<span class='ident'>len_utf8</span>();
-            <span class='boolval'>true</span>
+            <span class='boolvalue'>true</span>
         } <span class='kw'>else</span> {
-            <span class='boolval'>false</span>
+            <span class='boolvalue'>false</span>
         }
     }
 
@@ -835,19 +835,19 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>move_home</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
             <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='number'>0</span>;
-            <span class='boolval'>true</span>
+            <span class='boolvalue'>true</span>
         } <span class='kw'>else</span> {
-            <span class='boolval'>false</span>
+            <span class='boolvalue'>false</span>
         }
     }
 
     <span class='doccomment'>/// Move cursor to the end of the line.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>move_end</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
-            <span class='boolval'>false</span>
+            <span class='boolvalue'>false</span>
         } <span class='kw'>else</span> {
             <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>();
-            <span class='boolval'>true</span>
+            <span class='boolvalue'>true</span>
         }
     }
 
@@ -856,9 +856,9 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>delete</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>is_empty</span>() <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
             <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>remove</span>(<span class='self'>self</span>.<span class='ident'>pos</span>);
-            <span class='boolval'>true</span>
+            <span class='boolvalue'>true</span>
         } <span class='kw'>else</span> {
-            <span class='boolval'>false</span>
+            <span class='boolvalue'>false</span>
         }
     }
 
@@ -868,9 +868,9 @@
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>ch</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>char_before_cursor</span>() {
             <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>-=</span> <span class='ident'>ch</span>.<span class='ident'>len_utf8</span>();
             <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>remove</span>(<span class='self'>self</span>.<span class='ident'>pos</span>);
-            <span class='boolval'>true</span>
+            <span class='boolvalue'>true</span>
         } <span class='kw'>else</span> {
-            <span class='boolval'>false</span>
+            <span class='boolvalue'>false</span>
         }
     }
 
@@ -898,7 +898,7 @@
     <span class='doccomment'>/// Exchange the char before cursor with the character at cursor.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>transpose_chars</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>==</span> <span class='number'>0</span> <span class='op'>||</span> <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>chars</span>().<span class='ident'>count</span>() <span class='op'>&lt;</span> <span class='number'>2</span> {
-            <span class='kw'>return</span> <span class='boolval'>false</span>;
+            <span class='kw'>return</span> <span class='boolvalue'>false</span>;
         }
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
             <span class='self'>self</span>.<span class='ident'>move_left</span>();
@@ -915,7 +915,7 @@
         } <span class='kw'>else</span> {
             <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>-=</span> <span class='ident'>other_size</span> <span class='op'>-</span> <span class='ident'>size</span>;
         }
-        <span class='boolval'>true</span>
+        <span class='boolvalue'>true</span>
     }
 
     <span class='kw'>fn</span> <span class='ident'>prev_word_pos</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>pos</span>: <span class='ident'>usize</span>, <span class='ident'>test</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>
@@ -948,9 +948,9 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>move_to_prev_word</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>pos</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>prev_word_pos</span>(<span class='self'>self</span>.<span class='ident'>pos</span>, <span class='op'>|</span><span class='ident'>ch</span><span class='op'>|</span> <span class='op'>!</span><span class='ident'>ch</span>.<span class='ident'>is_alphanumeric</span>()) {
             <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>pos</span>;
-            <span class='boolval'>true</span>
+            <span class='boolvalue'>true</span>
         } <span class='kw'>else</span> {
-            <span class='boolval'>false</span>
+            <span class='boolvalue'>false</span>
         }
     }
 
@@ -997,9 +997,9 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>move_to_next_word</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>((_, <span class='ident'>end</span>)) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>next_word_pos</span>(<span class='self'>self</span>.<span class='ident'>pos</span>) {
             <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>end</span>;
-            <span class='boolval'>true</span>
+            <span class='boolvalue'>true</span>
         } <span class='kw'>else</span> {
-            <span class='boolval'>false</span>
+            <span class='boolvalue'>false</span>
         }
     }
 
@@ -1017,7 +1017,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>edit_word</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>a</span>: <span class='ident'>WordAction</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>((<span class='ident'>start</span>, <span class='ident'>end</span>)) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>next_word_pos</span>(<span class='self'>self</span>.<span class='ident'>pos</span>) {
             <span class='kw'>if</span> <span class='ident'>start</span> <span class='op'>==</span> <span class='ident'>end</span> {
-                <span class='kw'>return</span> <span class='boolval'>false</span>;
+                <span class='kw'>return</span> <span class='boolvalue'>false</span>;
             }
             <span class='kw'>let</span> <span class='ident'>word</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>drain</span>(<span class='ident'>start</span>..<span class='ident'>end</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>();
             <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>a</span> {
@@ -1034,9 +1034,9 @@
             };
             <span class='self'>self</span>.<span class='ident'>insert_str</span>(<span class='ident'>start</span>, <span class='kw-2'>&amp;</span><span class='ident'>result</span>);
             <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>start</span> <span class='op'>+</span> <span class='ident'>result</span>.<span class='ident'>len</span>();
-            <span class='boolval'>true</span>
+            <span class='boolvalue'>true</span>
         } <span class='kw'>else</span> {
-            <span class='boolval'>false</span>
+            <span class='boolvalue'>false</span>
         }
     }
 
@@ -1049,7 +1049,7 @@
             <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>prev_start</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>prev_word_pos</span>(<span class='ident'>start</span>, <span class='op'>|</span><span class='ident'>ch</span><span class='op'>|</span> <span class='op'>!</span><span class='ident'>ch</span>.<span class='ident'>is_alphanumeric</span>()) {
                 <span class='kw'>let</span> (_, <span class='ident'>prev_end</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>next_word_pos</span>(<span class='ident'>prev_start</span>).<span class='ident'>unwrap</span>();
                 <span class='kw'>if</span> <span class='ident'>prev_end</span> <span class='op'>&gt;=</span> <span class='ident'>start</span> {
-                    <span class='kw'>return</span> <span class='boolval'>false</span>;
+                    <span class='kw'>return</span> <span class='boolvalue'>false</span>;
                 }
                 <span class='kw'>let</span> (_, <span class='kw-2'>mut</span> <span class='ident'>end</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>next_word_pos</span>(<span class='ident'>start</span>).<span class='ident'>unwrap</span>();
                 <span class='kw'>if</span> <span class='ident'>end</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>pos</span> {
@@ -1073,10 +1073,10 @@
                 <span class='self'>self</span>.<span class='ident'>insert_str</span>(<span class='ident'>idx</span>, <span class='kw-2'>&amp;</span><span class='ident'>prevword</span>);
 
                 <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>idx</span> <span class='op'>+</span> <span class='ident'>prevword</span>.<span class='ident'>len</span>();
-                <span class='kw'>return</span> <span class='boolval'>true</span>;
+                <span class='kw'>return</span> <span class='boolvalue'>true</span>;
             }
         }
-        <span class='boolval'>false</span>
+        <span class='boolvalue'>false</span>
     }
 
     <span class='doccomment'>/// Replaces the content between [`start`..`end`] with `text` and positions the cursor to the end of text.</span>
@@ -1089,10 +1089,10 @@
     <span class='kw'>fn</span> <span class='ident'>insert_str</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>idx</span>: <span class='ident'>usize</span>, <span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='ident'>idx</span> <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>len</span>() {
             <span class='self'>self</span>.<span class='ident'>buf</span>.<span class='ident'>push_str</span>(<span class='ident'>s</span>);
-            <span class='boolval'>true</span>
+            <span class='boolvalue'>true</span>
         } <span class='kw'>else</span> {
             <span class='ident'>insert_str</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>buf</span>, <span class='ident'>idx</span>, <span class='ident'>s</span>);
-            <span class='boolval'>false</span>
+            <span class='boolvalue'>false</span>
         }
     }
 }
@@ -1126,7 +1126,7 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>test</span> {
-    <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>LineBuffer</span>, <span class='ident'>MAX_LINE</span>, <span class='ident'>WordAction</span>};
+    <span class='kw'>use</span> <span class='kw'>super</span>::{<span class='ident'>LineBuffer</span>, <span class='ident'>MAX_LINE</span>, <span class='ident'>WordAction</span>};
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>insert</span>() {
@@ -1134,18 +1134,18 @@
         <span class='kw'>let</span> <span class='ident'>push</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>insert</span>(<span class='string'>&#39;α&#39;</span>).<span class='ident'>unwrap</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;α&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>2</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>push</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>push</span>);
 
         <span class='kw'>let</span> <span class='ident'>push</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>insert</span>(<span class='string'>&#39;ß&#39;</span>).<span class='ident'>unwrap</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;αß&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>4</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>push</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>push</span>);
 
         <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='kw'>let</span> <span class='ident'>push</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>insert</span>(<span class='string'>&#39;γ&#39;</span>).<span class='ident'>unwrap</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;γαß&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>2</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>false</span>, <span class='ident'>push</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>false</span>, <span class='ident'>push</span>);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -1154,22 +1154,22 @@
         <span class='kw'>let</span> <span class='ident'>ok</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>move_left</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;αß&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>2</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>ok</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>ok</span>);
 
         <span class='kw'>let</span> <span class='ident'>ok</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>move_right</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;αß&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>4</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>ok</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>ok</span>);
 
         <span class='kw'>let</span> <span class='ident'>ok</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>move_home</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;αß&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>ok</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>ok</span>);
 
         <span class='kw'>let</span> <span class='ident'>ok</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>move_end</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;αß&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>4</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>ok</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>ok</span>);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -1178,12 +1178,12 @@
         <span class='kw'>let</span> <span class='ident'>ok</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>delete</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;α&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>2</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>ok</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>ok</span>);
 
         <span class='kw'>let</span> <span class='ident'>ok</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>backspace</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>ok</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>ok</span>);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -1207,21 +1207,21 @@
         <span class='kw'>let</span> <span class='ident'>ok</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>transpose_chars</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;ßac&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>3</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>ok</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>ok</span>);
 
         <span class='ident'>s</span>.<span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>from</span>(<span class='string'>&quot;aßc&quot;</span>);
         <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='number'>3</span>;
         <span class='kw'>let</span> <span class='ident'>ok</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>transpose_chars</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;acß&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>2</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>ok</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>ok</span>);
 
         <span class='ident'>s</span>.<span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>from</span>(<span class='string'>&quot;aßc&quot;</span>);
         <span class='ident'>s</span>.<span class='ident'>pos</span> <span class='op'>=</span> <span class='number'>4</span>;
         <span class='kw'>let</span> <span class='ident'>ok</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>transpose_chars</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;acß&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>2</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>ok</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>ok</span>);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -1230,7 +1230,7 @@
         <span class='kw'>let</span> <span class='ident'>ok</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>move_to_prev_word</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;a ß  c&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>2</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>ok</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>ok</span>);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -1248,7 +1248,7 @@
         <span class='kw'>let</span> <span class='ident'>ok</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>move_to_next_word</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;a ß  c&quot;</span>, <span class='ident'>s</span>.<span class='ident'>buf</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>4</span>, <span class='ident'>s</span>.<span class='ident'>pos</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>ok</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolvalue'>true</span>, <span class='ident'>ok</span>);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -1321,6 +1321,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
