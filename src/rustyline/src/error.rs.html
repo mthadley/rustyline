@@ -107,11 +107,24 @@
 <span id="63">63</span>
 <span id="64">64</span>
 <span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Contains error type for handling I/O and Errno errors</span>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>unix</span>)]</span>
 <span class='kw'>use</span> <span class='ident'>nix</span>;
 
 <span class='kw'>use</span> <span class='ident'>char_iter</span>;
@@ -122,24 +135,26 @@
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>ReadlineError</span> {
     <span class='doccomment'>/// I/O Error</span>
     <span class='ident'>Io</span>(<span class='ident'>io</span>::<span class='ident'>Error</span>),
-    <span class='doccomment'>/// Error from syscall</span>
-    <span class='ident'>Errno</span>(<span class='ident'>nix</span>::<span class='ident'>Error</span>),
     <span class='doccomment'>/// Chars Error</span>
     <span class='ident'>Char</span>(<span class='ident'>char_iter</span>::<span class='ident'>CharsError</span>),
     <span class='doccomment'>/// EOF (Ctrl-d)</span>
     <span class='ident'>Eof</span>,
     <span class='doccomment'>/// Ctrl-C</span>
     <span class='ident'>Interrupted</span>,
+    <span class='doccomment'>/// Unix Error from syscall</span>
+    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>unix</span>)]</span>
+    <span class='ident'>Errno</span>(<span class='ident'>nix</span>::<span class='ident'>Error</span>),
 }
 
 <span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>ReadlineError</span> {
     <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>ReadlineError</span>::<span class='ident'>Io</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='ident'>err</span>.<span class='ident'>fmt</span>(<span class='ident'>f</span>),
-            <span class='ident'>ReadlineError</span>::<span class='ident'>Errno</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;Errno: {}&quot;</span>, <span class='ident'>err</span>.<span class='ident'>errno</span>().<span class='ident'>desc</span>()),
             <span class='ident'>ReadlineError</span>::<span class='ident'>Char</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='ident'>err</span>.<span class='ident'>fmt</span>(<span class='ident'>f</span>),
             <span class='ident'>ReadlineError</span>::<span class='ident'>Eof</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;EOF&quot;</span>),
             <span class='ident'>ReadlineError</span>::<span class='ident'>Interrupted</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;Interrupted&quot;</span>),
+            <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>unix</span>)]</span>
+            <span class='ident'>ReadlineError</span>::<span class='ident'>Errno</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;Errno: {}&quot;</span>, <span class='ident'>err</span>.<span class='ident'>errno</span>().<span class='ident'>desc</span>()),
         }
     }
 }
@@ -148,10 +163,11 @@
     <span class='kw'>fn</span> <span class='ident'>description</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>str</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>ReadlineError</span>::<span class='ident'>Io</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='ident'>err</span>.<span class='ident'>description</span>(),
-            <span class='ident'>ReadlineError</span>::<span class='ident'>Errno</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='ident'>err</span>.<span class='ident'>errno</span>().<span class='ident'>desc</span>(),
             <span class='ident'>ReadlineError</span>::<span class='ident'>Char</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='ident'>err</span>.<span class='ident'>description</span>(),
             <span class='ident'>ReadlineError</span>::<span class='ident'>Eof</span> <span class='op'>=&gt;</span> <span class='string'>&quot;EOF&quot;</span>,
             <span class='ident'>ReadlineError</span>::<span class='ident'>Interrupted</span> <span class='op'>=&gt;</span> <span class='string'>&quot;Interrupted&quot;</span>,
+            <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>unix</span>)]</span>
+            <span class='ident'>ReadlineError</span>::<span class='ident'>Errno</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='ident'>err</span>.<span class='ident'>errno</span>().<span class='ident'>desc</span>(),
         }
     }
 }
@@ -162,6 +178,7 @@
     }
 }
 
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>unix</span>)]</span>
 <span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>nix</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>ReadlineError</span> {
     <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>err</span>: <span class='ident'>nix</span>::<span class='ident'>Error</span>) <span class='op'>-&gt;</span> <span class='ident'>ReadlineError</span> {
         <span class='ident'>ReadlineError</span>::<span class='ident'>Errno</span>(<span class='ident'>err</span>)
@@ -171,6 +188,13 @@
 <span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>char_iter</span>::<span class='ident'>CharsError</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>ReadlineError</span> {
     <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>err</span>: <span class='ident'>char_iter</span>::<span class='ident'>CharsError</span>) <span class='op'>-&gt;</span> <span class='ident'>ReadlineError</span> {
         <span class='ident'>ReadlineError</span>::<span class='ident'>Char</span>(<span class='ident'>err</span>)
+    }
+}
+
+<span class='kw'>impl</span> <span class='ident'>ReadlineError</span> {
+    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>unix</span>)]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_errno</span>(<span class='ident'>errno</span>: <span class='ident'>nix</span>::<span class='ident'>errno</span>::<span class='ident'>Errno</span>) <span class='op'>-&gt;</span> <span class='ident'>ReadlineError</span> {
+        <span class='ident'>ReadlineError</span>::<span class='ident'>from</span>(<span class='ident'>nix</span>::<span class='ident'>Error</span>::<span class='ident'>from_errno</span>(<span class='ident'>errno</span>))
     }
 }
 </pre>
