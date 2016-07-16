@@ -1140,6 +1140,16 @@
 <span id="1096">1096</span>
 <span id="1097">1097</span>
 <span id="1098">1098</span>
+<span id="1099">1099</span>
+<span id="1100">1100</span>
+<span id="1101">1101</span>
+<span id="1102">1102</span>
+<span id="1103">1103</span>
+<span id="1104">1104</span>
+<span id="1105">1105</span>
+<span id="1106">1106</span>
+<span id="1107">1107</span>
+<span id="1108">1108</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Readline for Rust</span>
 <span class='doccomment'>//!</span>
@@ -2077,6 +2087,16 @@
                          <span class='self'>self</span>.<span class='ident'>completer</span>,
                          <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>kill_ring</span>)
         }
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>history_ignore_space</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>yes</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>Editor</span><span class='op'>&lt;</span><span class='lifetime'>&#39;completer</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>history</span>.<span class='ident'>ignore_space</span>(<span class='ident'>yes</span>);
+        <span class='self'>self</span>
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>history_ignore_dups</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>yes</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>Editor</span><span class='op'>&lt;</span><span class='lifetime'>&#39;completer</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>history</span>.<span class='ident'>ignore_dups</span>(<span class='ident'>yes</span>);
+        <span class='self'>self</span>
     }
 
     <span class='doccomment'>/// Load the history from the specified file.</span>

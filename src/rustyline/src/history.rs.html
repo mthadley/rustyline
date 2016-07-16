@@ -250,6 +250,19 @@
 <span id="206">206</span>
 <span id="207">207</span>
 <span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! History API</span>
 
@@ -262,6 +275,8 @@
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>History</span> {
     <span class='ident'>entries</span>: <span class='ident'>VecDeque</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
     <span class='ident'>max_len</span>: <span class='ident'>usize</span>,
+    <span class='ident'>ignore_space</span>: <span class='ident'>bool</span>,
+    <span class='ident'>ignore_dups</span>: <span class='ident'>bool</span>,
 }
 
 <span class='kw'>const</span> <span class='ident'>DEFAULT_HISTORY_MAX_LEN</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>100</span>;
@@ -271,7 +286,17 @@
         <span class='ident'>History</span> {
             <span class='ident'>entries</span>: <span class='ident'>VecDeque</span>::<span class='ident'>new</span>(),
             <span class='ident'>max_len</span>: <span class='ident'>DEFAULT_HISTORY_MAX_LEN</span>,
+            <span class='ident'>ignore_space</span>: <span class='bool-val'>true</span>,
+            <span class='ident'>ignore_dups</span>: <span class='bool-val'>true</span>,
         }
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ignore_space</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>yes</span>: <span class='ident'>bool</span>) {
+        <span class='self'>self</span>.<span class='ident'>ignore_space</span> <span class='op'>=</span> <span class='ident'>yes</span>;
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ignore_dups</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>yes</span>: <span class='ident'>bool</span>) {
+        <span class='self'>self</span>.<span class='ident'>ignore_dups</span> <span class='op'>=</span> <span class='ident'>yes</span>;
     }
 
     <span class='doccomment'>/// Return the history entry at position `index`, starting from 0.</span>
@@ -284,14 +309,15 @@
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>max_len</span> <span class='op'>==</span> <span class='number'>0</span> {
             <span class='kw'>return</span> <span class='bool-val'>false</span>;
         }
-        <span class='kw'>if</span> <span class='ident'>line</span>.<span class='ident'>is_empty</span>() <span class='op'>||</span> <span class='ident'>line</span>.<span class='ident'>chars</span>().<span class='ident'>next</span>().<span class='ident'>map_or</span>(<span class='bool-val'>true</span>, <span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span>.<span class='ident'>is_whitespace</span>()) {
-            <span class='comment'>// ignorespace</span>
+        <span class='kw'>if</span> <span class='ident'>line</span>.<span class='ident'>is_empty</span>() <span class='op'>||</span>
+           (<span class='self'>self</span>.<span class='ident'>ignore_space</span> <span class='op'>&amp;&amp;</span> <span class='ident'>line</span>.<span class='ident'>chars</span>().<span class='ident'>next</span>().<span class='ident'>map_or</span>(<span class='bool-val'>true</span>, <span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span>.<span class='ident'>is_whitespace</span>())) {
             <span class='kw'>return</span> <span class='bool-val'>false</span>;
         }
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>s</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>entries</span>.<span class='ident'>back</span>() {
-            <span class='kw'>if</span> <span class='ident'>s</span> <span class='op'>==</span> <span class='ident'>line</span> {
-                <span class='comment'>// ignoredups</span>
-                <span class='kw'>return</span> <span class='bool-val'>false</span>;
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>ignore_dups</span> {
+            <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>s</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>entries</span>.<span class='ident'>back</span>() {
+                <span class='kw'>if</span> <span class='ident'>s</span> <span class='op'>==</span> <span class='ident'>line</span> {
+                    <span class='kw'>return</span> <span class='bool-val'>false</span>;
+                }
             }
         }
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>entries</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>max_len</span> {
