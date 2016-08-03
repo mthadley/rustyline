@@ -263,6 +263,14 @@
 <span id="219">219</span>
 <span id="220">220</span>
 <span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! History API</span>
 
@@ -286,15 +294,19 @@
         <span class='ident'>History</span> {
             <span class='ident'>entries</span>: <span class='ident'>VecDeque</span>::<span class='ident'>new</span>(),
             <span class='ident'>max_len</span>: <span class='ident'>DEFAULT_HISTORY_MAX_LEN</span>,
-            <span class='ident'>ignore_space</span>: <span class='bool-val'>true</span>,
+            <span class='ident'>ignore_space</span>: <span class='bool-val'>false</span>,
             <span class='ident'>ignore_dups</span>: <span class='bool-val'>true</span>,
         }
     }
 
+    <span class='doccomment'>/// Tell if lines which begin with a space character are saved or not in the history list.</span>
+    <span class='doccomment'>/// By default, they are saved.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ignore_space</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>yes</span>: <span class='ident'>bool</span>) {
         <span class='self'>self</span>.<span class='ident'>ignore_space</span> <span class='op'>=</span> <span class='ident'>yes</span>;
     }
 
+    <span class='doccomment'>/// Tell if lines which match the previous history entry are saved or not in the history list.</span>
+    <span class='doccomment'>/// By default, they are ignored.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ignore_dups</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>yes</span>: <span class='ident'>bool</span>) {
         <span class='self'>self</span>.<span class='ident'>ignore_dups</span> <span class='op'>=</span> <span class='ident'>yes</span>;
     }
@@ -388,6 +400,9 @@
     }
 
     <span class='doccomment'>/// Search history (start position inclusive [0, len-1])</span>
+    <span class='doccomment'>/// Return the absolute index of the nearest history entry that matches `term`.</span>
+    <span class='doccomment'>/// Return None if no entry contains `term` between [start, len -1] for forward search</span>
+    <span class='doccomment'>/// or between [0, start] for reverse search.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>search</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>term</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>start</span>: <span class='ident'>usize</span>, <span class='ident'>reverse</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> {
         <span class='kw'>if</span> <span class='ident'>term</span>.<span class='ident'>is_empty</span>() <span class='op'>||</span> <span class='ident'>start</span> <span class='op'>&gt;=</span> <span class='self'>self</span>.<span class='ident'>len</span>() {
             <span class='kw'>return</span> <span class='prelude-val'>None</span>;
@@ -435,6 +450,7 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>add</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>history</span> <span class='op'>=</span> <span class='kw'>super</span>::<span class='ident'>History</span>::<span class='ident'>new</span>();
+        <span class='ident'>history</span>.<span class='ident'>ignore_space</span>(<span class='bool-val'>true</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>history</span>.<span class='ident'>add</span>(<span class='string'>&quot;line1&quot;</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>history</span>.<span class='ident'>add</span>(<span class='string'>&quot;line2&quot;</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>history</span>.<span class='ident'>add</span>(<span class='string'>&quot;line2&quot;</span>));
