@@ -102,7 +102,7 @@
 
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>KeyPress</span> {
-    <span class='ident'>UNKNOWN_ESC_SEQ</span>,
+    <span class='ident'>UnknownEscSeq</span>,
     <span class='ident'>Backspace</span>,
     <span class='ident'>Char</span>(<span class='ident'>char</span>),
     <span class='ident'>Ctrl</span>(<span class='ident'>char</span>),
@@ -120,7 +120,7 @@
     <span class='ident'>Up</span>,
 }
 
-<span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;clippy&quot;</span>, <span class='ident'>allow</span>(<span class='ident'>match_same_arms</span>))]</span>
+<span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>match_same_arms</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>char_to_key_press</span>(<span class='ident'>c</span>: <span class='ident'>char</span>) <span class='op'>-&gt;</span> <span class='ident'>KeyPress</span> {
     <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>c</span>.<span class='ident'>is_control</span>() {
         <span class='kw'>return</span> <span class='ident'>KeyPress</span>::<span class='ident'>Char</span>(<span class='ident'>c</span>);
