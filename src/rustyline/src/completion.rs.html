@@ -210,6 +210,11 @@
 <span id="166">166</span>
 <span id="167">167</span>
 <span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Completion API</span>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>BTreeSet</span>;
@@ -276,7 +281,12 @@
     <span class='ident'>break_chars</span>: <span class='ident'>BTreeSet</span><span class='op'>&lt;</span><span class='ident'>char</span><span class='op'>&gt;</span>,
 }
 
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>unix</span>)]</span>
 <span class='kw'>static</span> <span class='ident'>DEFAULT_BREAK_CHARS</span>: [<span class='ident'>char</span>; <span class='number'>18</span>] <span class='op'>=</span> [<span class='string'>&#39; &#39;</span>, <span class='string'>&#39;\t&#39;</span>, <span class='string'>&#39;\n&#39;</span>, <span class='string'>&#39;&quot;&#39;</span>, <span class='string'>&#39;\\&#39;</span>, <span class='string'>&#39;\&#39;&#39;</span>, <span class='string'>&#39;`&#39;</span>, <span class='string'>&#39;@&#39;</span>, <span class='string'>&#39;$&#39;</span>, <span class='string'>&#39;&gt;&#39;</span>,
+                                          <span class='string'>&#39;&lt;&#39;</span>, <span class='string'>&#39;=&#39;</span>, <span class='string'>&#39;;&#39;</span>, <span class='string'>&#39;|&#39;</span>, <span class='string'>&#39;&amp;&#39;</span>, <span class='string'>&#39;{&#39;</span>, <span class='string'>&#39;(&#39;</span>, <span class='string'>&#39;\0&#39;</span>];
+<span class='comment'>// Remove \ to make file completion works on windows</span>
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>windows</span>)]</span>
+<span class='kw'>static</span> <span class='ident'>DEFAULT_BREAK_CHARS</span>: [<span class='ident'>char</span>; <span class='number'>17</span>] <span class='op'>=</span> [<span class='string'>&#39; &#39;</span>, <span class='string'>&#39;\t&#39;</span>, <span class='string'>&#39;\n&#39;</span>, <span class='string'>&#39;&quot;&#39;</span>, <span class='string'>&#39;\&#39;&#39;</span>, <span class='string'>&#39;`&#39;</span>, <span class='string'>&#39;@&#39;</span>, <span class='string'>&#39;$&#39;</span>, <span class='string'>&#39;&gt;&#39;</span>,
                                           <span class='string'>&#39;&lt;&#39;</span>, <span class='string'>&#39;=&#39;</span>, <span class='string'>&#39;;&#39;</span>, <span class='string'>&#39;|&#39;</span>, <span class='string'>&#39;&amp;&#39;</span>, <span class='string'>&#39;{&#39;</span>, <span class='string'>&#39;(&#39;</span>, <span class='string'>&#39;\0&#39;</span>];
 
 <span class='kw'>impl</span> <span class='ident'>FilenameCompleter</span> {
