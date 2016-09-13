@@ -47,10 +47,10 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-442' class='srclink' href='../../src/rustyline/src/line_buffer.rs.html#14-17' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-441' class='srclink' href='../../src/rustyline/src/line_buffer.rs.html#14-17' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct LineBuffer {
     // some fields omitted
-}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../rustyline/line_buffer/struct.LineBuffer.html' title='rustyline::line_buffer::LineBuffer'>LineBuffer</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-445' class='srclink' href='../../src/rustyline/src/line_buffer.rs.html#19-426' title='goto source code'>[src]</a></span></h3>
+}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../rustyline/line_buffer/struct.LineBuffer.html' title='rustyline::line_buffer::LineBuffer'>LineBuffer</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-444' class='srclink' href='../../src/rustyline/src/line_buffer.rs.html#19-430' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.with_capacity' class='method'><code>fn <a href='#method.with_capacity' class='fnname'>with_capacity</a>(capacity: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='../../rustyline/line_buffer/struct.LineBuffer.html' title='rustyline::line_buffer::LineBuffer'>LineBuffer</a></code></h4>
 <div class='docblock'><p>Create a new line buffer with the given maximum <code>capacity</code>.</p>
 </div><h4 id='method.as_str' class='method'><code>fn <a href='#method.as_str' class='fnname'>as_str</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
@@ -59,7 +59,8 @@
 <div class='docblock'><p>Converts a buffer into a <code>String</code> without copying or allocating.</p>
 </div><h4 id='method.pos' class='method'><code>fn <a href='#method.pos' class='fnname'>pos</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
 <div class='docblock'><p>Current cursor position (byte position)</p>
-</div><h4 id='method.len' class='method'><code>fn <a href='#method.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
+</div><h4 id='method.set_pos' class='method'><code>fn <a href='#method.set_pos' class='fnname'>set_pos</a>(&amp;mut self, pos: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>)</code></h4>
+<h4 id='method.len' class='method'><code>fn <a href='#method.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
 <div class='docblock'><p>Returns the length of this buffer, in bytes.</p>
 </div><h4 id='method.is_empty' class='method'><code>fn <a href='#method.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Returns <code>true</code> if this buffer has a length of zero.</p>
@@ -1186,9 +1187,6 @@ replaces them with the replacement string slice.</p>
 <span class='kw'>let</span> <span class='ident'>new_year</span> <span class='op'>=</span> <span class='string'>&quot;农历新年&quot;</span>;
 
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>new_year</span>, <span class='ident'>new_year</span>.<span class='ident'>to_uppercase</span>());</pre>
-</div><h4 id='method.escape_debug' class='method'><code>fn <a href='#method.escape_debug' class='fnname'>escape_debug</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
-<div class='stability'><em class='stab unstable'>Unstable (<code>str_escape</code>)<p>: return type may change to be an iterator</p>
-</em></div><div class='docblock'><p>Escapes each char in <code>s</code> with <code>char::escape_debug</code>.</p>
 </div><h4 id='method.escape_default' class='method'><code>fn <a href='#method.escape_default' class='fnname'>escape_default</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
 <div class='stability'><em class='stab unstable'>Unstable (<code>str_escape</code>)<p>: return type may change to be an iterator</p>
 </em></div><div class='docblock'><p>Escapes each char in <code>s</code> with <code>char::escape_default</code>.</p>
@@ -1206,10 +1204,10 @@ replaces them with the replacement string slice.</p>
 <span class='kw'>let</span> <span class='ident'>boxed_str</span> <span class='op'>=</span> <span class='ident'>string</span>.<span class='ident'>clone</span>().<span class='ident'>into_boxed_str</span>();
 
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>boxed_str</span>.<span class='ident'>into_string</span>(), <span class='ident'>string</span>);</pre>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../rustyline/line_buffer/struct.LineBuffer.html' title='rustyline::line_buffer::LineBuffer'>LineBuffer</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-435' class='srclink' href='../../src/rustyline/src/line_buffer.rs.html#13' title='goto source code'>[src]</a></span></h3>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../rustyline/line_buffer/struct.LineBuffer.html' title='rustyline::line_buffer::LineBuffer'>LineBuffer</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-434' class='srclink' href='../../src/rustyline/src/line_buffer.rs.html#13' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
 <div class='docblock'><p>Formats the value using the given formatter.</p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Deref.html' title='core::ops::Deref'>Deref</a> for <a class='struct' href='../../rustyline/line_buffer/struct.LineBuffer.html' title='rustyline::line_buffer::LineBuffer'>LineBuffer</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-583' class='srclink' href='../../src/rustyline/src/line_buffer.rs.html#428-434' title='goto source code'>[src]</a></span></h3>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Deref.html' title='core::ops::Deref'>Deref</a> for <a class='struct' href='../../rustyline/line_buffer/struct.LineBuffer.html' title='rustyline::line_buffer::LineBuffer'>LineBuffer</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-586' class='srclink' href='../../src/rustyline/src/line_buffer.rs.html#432-438' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='associatedtype.Target' class='type'><code>type <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Deref.html#associatedtype.Target' class='type'>Target</a> = <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
 <div class='docblock'><p>The resulting type after dereferencing</p>
 </div><h4 id='method.deref' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Deref.html#tymethod.deref' class='fnname'>deref</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
