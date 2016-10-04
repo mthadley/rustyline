@@ -98,6 +98,8 @@
 <span id="54">54</span>
 <span id="55">55</span>
 <span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
 </pre><pre class='rust '>
 
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Copy</span>)]</span>
@@ -115,6 +117,8 @@
     <span class='ident'>Left</span>,
     <span class='ident'>Meta</span>(<span class='ident'>char</span>),
     <span class='ident'>Null</span>,
+    <span class='ident'>PageDown</span>,
+    <span class='ident'>PageUp</span>,
     <span class='ident'>Right</span>,
     <span class='ident'>Tab</span>, <span class='comment'>// Ctrl(&#39;I&#39;)</span>
     <span class='ident'>Up</span>,
@@ -134,12 +138,12 @@
         <span class='string'>&#39;\x05&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Ctrl</span>(<span class='string'>&#39;E&#39;</span>),
         <span class='string'>&#39;\x06&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Ctrl</span>(<span class='string'>&#39;F&#39;</span>),
         <span class='string'>&#39;\x07&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Ctrl</span>(<span class='string'>&#39;G&#39;</span>),
-        <span class='string'>&#39;\x08&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Backspace</span>,
+        <span class='string'>&#39;\x08&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Backspace</span>, <span class='comment'>// &#39;\b&#39;</span>
         <span class='string'>&#39;\x09&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Tab</span>,
-        <span class='string'>&#39;\x0a&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Ctrl</span>(<span class='string'>&#39;J&#39;</span>),
+        <span class='string'>&#39;\x0a&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Ctrl</span>(<span class='string'>&#39;J&#39;</span>), <span class='comment'>// &#39;\n&#39; (10)</span>
         <span class='string'>&#39;\x0b&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Ctrl</span>(<span class='string'>&#39;K&#39;</span>),
         <span class='string'>&#39;\x0c&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Ctrl</span>(<span class='string'>&#39;L&#39;</span>),
-        <span class='string'>&#39;\x0d&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Enter</span>,
+        <span class='string'>&#39;\x0d&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Enter</span>, <span class='comment'>// &#39;\r&#39; (13)</span>
         <span class='string'>&#39;\x0e&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Ctrl</span>(<span class='string'>&#39;N&#39;</span>),
         <span class='string'>&#39;\x10&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Ctrl</span>(<span class='string'>&#39;P&#39;</span>),
         <span class='string'>&#39;\x12&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>KeyPress</span>::<span class='ident'>Ctrl</span>(<span class='string'>&#39;R&#39;</span>),

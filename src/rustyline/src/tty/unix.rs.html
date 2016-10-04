@@ -280,6 +280,68 @@
 <span id="236">236</span>
 <span id="237">237</span>
 <span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='ident'>Read</span>, <span class='ident'>Write</span>};
@@ -295,10 +357,9 @@
 <span class='kw'>use</span> ::<span class='prelude-ty'>Result</span>;
 <span class='kw'>use</span> ::<span class='ident'>error</span>;
 
-<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Handle</span> <span class='op'>=</span> ();
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Mode</span> <span class='op'>=</span> <span class='ident'>termios</span>::<span class='ident'>Termios</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>STDIN_FILENO</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>STDOUT_FILENO</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>STDOUT_FILENO</span>;
+<span class='kw'>const</span> <span class='ident'>STDIN_FILENO</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>;
+<span class='kw'>const</span> <span class='ident'>STDOUT_FILENO</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>STDOUT_FILENO</span>;
 
 <span class='doccomment'>/// Unsupported Terminals that don&#39;t support RAW mode</span>
 <span class='kw'>static</span> <span class='ident'>UNSUPPORTED_TERM</span>: [<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>; <span class='number'>3</span>] <span class='op'>=</span> [<span class='string'>&quot;dumb&quot;</span>, <span class='string'>&quot;cons25&quot;</span>, <span class='string'>&quot;emacs&quot;</span>];
@@ -314,14 +375,14 @@
 
 <span class='doccomment'>/// Try to get the number of columns in the current terminal,</span>
 <span class='doccomment'>/// or assume 80 if it fails.</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_columns</span>(_: <span class='ident'>Handle</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+<span class='kw'>fn</span> <span class='ident'>get_columns</span>() <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
     <span class='kw'>let</span> (<span class='ident'>cols</span>, _) <span class='op'>=</span> <span class='ident'>get_win_size</span>();
     <span class='ident'>cols</span>
 }
 
 <span class='doccomment'>/// Try to get the number of rows in the current terminal,</span>
 <span class='doccomment'>/// or assume 24 if it fails.</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_rows</span>(_: <span class='ident'>Handle</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+<span class='kw'>fn</span> <span class='ident'>get_rows</span>() <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
     <span class='kw'>let</span> (_, <span class='ident'>rows</span>) <span class='op'>=</span> <span class='ident'>get_win_size</span>();
     <span class='ident'>rows</span>
 }
@@ -349,7 +410,7 @@
 
 <span class='doccomment'>/// Check TERM environment variable to see if current term is in our</span>
 <span class='doccomment'>/// unsupported list</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_unsupported_term</span>() <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+<span class='kw'>fn</span> <span class='ident'>is_unsupported_term</span>() <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ascii</span>::<span class='ident'>AsciiExt</span>;
     <span class='kw'>match</span> <span class='ident'>std</span>::<span class='ident'>env</span>::<span class='ident'>var</span>(<span class='string'>&quot;TERM&quot;</span>) {
         <span class='prelude-val'>Ok</span>(<span class='ident'>term</span>) <span class='op'>=&gt;</span> {
@@ -365,11 +426,11 @@
 
 
 <span class='doccomment'>/// Return whether or not STDIN, STDOUT or STDERR is a TTY</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_a_tty</span>(<span class='ident'>fd</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+<span class='kw'>fn</span> <span class='ident'>is_a_tty</span>(<span class='ident'>fd</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
     <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>isatty</span>(<span class='ident'>fd</span>) <span class='op'>!=</span> <span class='number'>0</span> }
 }
 
-<span class='doccomment'>/// Enable raw mode for the TERM</span>
+<span class='doccomment'>/// Enable RAW mode for the terminal.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>enable_raw_mode</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Mode</span><span class='op'>&gt;</span> {
     <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>errno</span>::<span class='ident'>Errno</span>::<span class='ident'>ENOTTY</span>;
     <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>sys</span>::<span class='ident'>termios</span>::{<span class='ident'>BRKINT</span>, <span class='ident'>CS8</span>, <span class='ident'>ECHO</span>, <span class='ident'>ICANON</span>, <span class='ident'>ICRNL</span>, <span class='ident'>IEXTEN</span>, <span class='ident'>INPCK</span>, <span class='ident'>ISIG</span>, <span class='ident'>ISTRIP</span>, <span class='ident'>IXON</span>,
@@ -393,18 +454,13 @@
     <span class='prelude-val'>Ok</span>(<span class='ident'>original_mode</span>)
 }
 
-<span class='doccomment'>/// Disable Raw mode for the term</span>
+<span class='doccomment'>/// Disable RAW mode for the terminal.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>disable_raw_mode</span>(<span class='ident'>original_mode</span>: <span class='ident'>Mode</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcsetattr</span>(<span class='ident'>STDIN_FILENO</span>, <span class='ident'>termios</span>::<span class='ident'>TCSAFLUSH</span>, <span class='kw-2'>&amp;</span><span class='ident'>original_mode</span>));
     <span class='prelude-val'>Ok</span>(())
 }
 
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>stdout_handle</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Handle</span><span class='op'>&gt;</span> {
-    <span class='prelude-val'>Ok</span>(())
-}
-
-<span class='doccomment'>/// Clear the screen. Used to handle ctrl+l</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>clear_screen</span>(<span class='ident'>w</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Write</span>, _: <span class='ident'>Handle</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+<span class='kw'>fn</span> <span class='ident'>clear_screen</span>(<span class='ident'>w</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Write</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>w</span>.<span class='ident'>write_all</span>(<span class='string'>b&quot;\x1b[H\x1b[2J&quot;</span>));
     <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>w</span>.<span class='ident'>flush</span>());
     <span class='prelude-val'>Ok</span>(())
@@ -451,9 +507,13 @@
                 <span class='kw'>let</span> <span class='ident'>seq3</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>next_char</span>());
                 <span class='kw'>if</span> <span class='ident'>seq3</span> <span class='op'>==</span> <span class='string'>&#39;~&#39;</span> {
                     <span class='kw'>match</span> <span class='ident'>seq2</span> {
+                        <span class='comment'>// &#39;1&#39; =&gt; Ok(KeyPress::Home),</span>
                         <span class='string'>&#39;3&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Delete</span>),
-                        <span class='comment'>// TODO &#39;1&#39; // Home</span>
-                        <span class='comment'>// TODO &#39;4&#39; // End</span>
+                        <span class='comment'>// &#39;4&#39; =&gt; Ok(KeyPress::End),</span>
+                        <span class='string'>&#39;5&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>PageUp</span>),
+                        <span class='string'>&#39;6&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>PageDown</span>),
+                        <span class='string'>&#39;7&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Home</span>),
+                        <span class='string'>&#39;8&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>End</span>),
                         _ <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>UnknownEscSeq</span>),
                     }
                 } <span class='kw'>else</span> {
@@ -461,7 +521,7 @@
                 }
             } <span class='kw'>else</span> {
                 <span class='kw'>match</span> <span class='ident'>seq2</span> {
-                    <span class='string'>&#39;A&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Up</span>),
+                    <span class='string'>&#39;A&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Up</span>), <span class='comment'>// ANSI</span>
                     <span class='string'>&#39;B&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Down</span>),
                     <span class='string'>&#39;C&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Right</span>),
                     <span class='string'>&#39;D&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Left</span>),
@@ -474,6 +534,10 @@
             <span class='comment'>// ESC O sequences.</span>
             <span class='kw'>let</span> <span class='ident'>seq2</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>next_char</span>());
             <span class='kw'>match</span> <span class='ident'>seq2</span> {
+                <span class='string'>&#39;A&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Up</span>),
+                <span class='string'>&#39;B&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Down</span>),
+                <span class='string'>&#39;C&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Right</span>),
+                <span class='string'>&#39;D&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Left</span>),
                 <span class='string'>&#39;F&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>End</span>),
                 <span class='string'>&#39;H&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>Home</span>),
                 _ <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>KeyPress</span>::<span class='ident'>UnknownEscSeq</span>),
@@ -505,9 +569,9 @@
 }
 
 <span class='kw'>static</span> <span class='ident'>SIGWINCH_ONCE</span>: <span class='ident'>sync</span>::<span class='ident'>Once</span> <span class='op'>=</span> <span class='ident'>sync</span>::<span class='ident'>ONCE_INIT</span>;
-<span class='kw'>pub</span> <span class='kw'>static</span> <span class='ident'>SIGWINCH</span>: <span class='ident'>atomic</span>::<span class='ident'>AtomicBool</span> <span class='op'>=</span> <span class='ident'>atomic</span>::<span class='ident'>ATOMIC_BOOL_INIT</span>;
+<span class='kw'>static</span> <span class='ident'>SIGWINCH</span>: <span class='ident'>atomic</span>::<span class='ident'>AtomicBool</span> <span class='op'>=</span> <span class='ident'>atomic</span>::<span class='ident'>ATOMIC_BOOL_INIT</span>;
 
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>install_sigwinch_handler</span>() {
+<span class='kw'>fn</span> <span class='ident'>install_sigwinch_handler</span>() {
     <span class='ident'>SIGWINCH_ONCE</span>.<span class='ident'>call_once</span>(<span class='op'>||</span> <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='ident'>sigwinch</span> <span class='op'>=</span> <span class='ident'>signal</span>::<span class='ident'>SigAction</span>::<span class='ident'>new</span>(<span class='ident'>signal</span>::<span class='ident'>SigHandler</span>::<span class='ident'>Handler</span>(<span class='ident'>sigwinch_handler</span>),
                                               <span class='ident'>signal</span>::<span class='ident'>SaFlag</span>::<span class='ident'>empty</span>(),
@@ -518,6 +582,66 @@
 
 <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span> <span class='ident'>sigwinch_handler</span>(_: <span class='ident'>signal</span>::<span class='ident'>SigNum</span>) {
     <span class='ident'>SIGWINCH</span>.<span class='ident'>store</span>(<span class='bool-val'>true</span>, <span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>);
+}
+
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Terminal</span> <span class='op'>=</span> <span class='ident'>PosixTerminal</span>;
+
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>PosixTerminal</span> {
+    <span class='ident'>unsupported</span>: <span class='ident'>bool</span>,
+    <span class='ident'>stdin_isatty</span>: <span class='ident'>bool</span>,
+}
+
+<span class='kw'>impl</span> <span class='ident'>PosixTerminal</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>PosixTerminal</span> {
+        <span class='kw'>let</span> <span class='ident'>term</span> <span class='op'>=</span> <span class='ident'>PosixTerminal</span> {
+            <span class='ident'>unsupported</span>: <span class='ident'>is_unsupported_term</span>(),
+            <span class='ident'>stdin_isatty</span>: <span class='ident'>is_a_tty</span>(<span class='ident'>STDIN_FILENO</span>),
+        };
+        <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>term</span>.<span class='ident'>unsupported</span> <span class='op'>&amp;&amp;</span> <span class='ident'>term</span>.<span class='ident'>stdin_isatty</span> <span class='op'>&amp;&amp;</span> <span class='ident'>is_a_tty</span>(<span class='ident'>STDOUT_FILENO</span>) {
+            <span class='ident'>install_sigwinch_handler</span>();
+        }
+        <span class='ident'>term</span>
+    }
+
+    <span class='comment'>// Init checks:</span>
+
+    <span class='doccomment'>/// Check if current terminal can provide a rich line-editing user interface.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_unsupported</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>unsupported</span>
+    }
+
+    <span class='doccomment'>/// check if stdin is connected to a terminal.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_stdin_tty</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>stdin_isatty</span>
+    }
+
+    <span class='comment'>// Interactive loop:</span>
+
+    <span class='doccomment'>/// Get the number of columns in the current terminal.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_columns</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+        <span class='ident'>get_columns</span>()
+    }
+
+    <span class='doccomment'>/// Get the number of rows in the current terminal.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_rows</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+        <span class='ident'>get_rows</span>()
+    }
+
+    <span class='doccomment'>/// Create a RAW reader</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>create_reader</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>RawReader</span><span class='op'>&lt;</span><span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Stdin</span><span class='op'>&gt;&gt;</span> {
+        <span class='ident'>RawReader</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>stdin</span>())
+    }
+
+    <span class='doccomment'>/// Check if a SIGWINCH signal has been received</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>sigwinch</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='ident'>SIGWINCH</span>.<span class='ident'>compare_and_swap</span>(<span class='bool-val'>true</span>, <span class='bool-val'>false</span>, <span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>)
+    }
+
+    <span class='doccomment'>/// Clear the screen. Used to handle ctrl+l</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>clear_screen</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>w</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Write</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+        <span class='ident'>clear_screen</span>(<span class='ident'>w</span>)
+    }
 }
 </pre>
 </section>
