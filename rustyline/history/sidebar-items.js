@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["History",""]]});
+initSidebarItems({"enum":[["Direction",""]],"struct":[["History",""]]});

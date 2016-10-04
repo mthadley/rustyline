@@ -246,6 +246,11 @@
 <span id="202">202</span>
 <span id="203">203</span>
 <span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Kill Ring</span>
 
@@ -254,6 +259,12 @@
     <span class='ident'>Kill</span>,
     <span class='ident'>Yank</span>(<span class='ident'>usize</span>),
     <span class='ident'>Other</span>,
+}
+
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>, <span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Mode</span> {
+    <span class='ident'>Append</span>,
+    <span class='ident'>Prepend</span>,
 }
 
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>KillRing</span> {
@@ -278,20 +289,19 @@
     }
 
     <span class='doccomment'>/// Add `text` to the kill-ring.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>kill</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>text</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>forward</span>: <span class='ident'>bool</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>kill</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>text</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>dir</span>: <span class='ident'>Mode</span>) {
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>last_action</span> {
             <span class='ident'>Action</span>::<span class='ident'>Kill</span> <span class='op'>=&gt;</span> {
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>slots</span>.<span class='ident'>capacity</span>() <span class='op'>==</span> <span class='number'>0</span> {
                     <span class='comment'>// disabled</span>
                     <span class='kw'>return</span>;
                 }
-                <span class='kw'>if</span> <span class='ident'>forward</span> {
-                    <span class='comment'>// append</span>
-                    <span class='self'>self</span>.<span class='ident'>slots</span>[<span class='self'>self</span>.<span class='ident'>index</span>].<span class='ident'>push_str</span>(<span class='ident'>text</span>);
-                } <span class='kw'>else</span> {
-                    <span class='comment'>// prepend</span>
-                    <span class='self'>self</span>.<span class='ident'>slots</span>[<span class='self'>self</span>.<span class='ident'>index</span>] <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>from</span>(<span class='ident'>text</span>) <span class='op'>+</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slots</span>[<span class='self'>self</span>.<span class='ident'>index</span>];
-                }
+                <span class='kw'>match</span> <span class='ident'>dir</span> {
+                    <span class='ident'>Mode</span>::<span class='ident'>Append</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>slots</span>[<span class='self'>self</span>.<span class='ident'>index</span>].<span class='ident'>push_str</span>(<span class='ident'>text</span>),
+                    <span class='ident'>Mode</span>::<span class='ident'>Prepend</span> <span class='op'>=&gt;</span> {
+                        <span class='self'>self</span>.<span class='ident'>slots</span>[<span class='self'>self</span>.<span class='ident'>index</span>] <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>from</span>(<span class='ident'>text</span>) <span class='op'>+</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slots</span>[<span class='self'>self</span>.<span class='ident'>index</span>]
+                    }
+                };
             }
             _ <span class='op'>=&gt;</span> {
                 <span class='self'>self</span>.<span class='ident'>last_action</span> <span class='op'>=</span> <span class='ident'>Action</span>::<span class='ident'>Kill</span>;
@@ -348,12 +358,12 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-    <span class='kw'>use</span> <span class='kw'>super</span>::{<span class='ident'>Action</span>, <span class='ident'>KillRing</span>};
+    <span class='kw'>use</span> <span class='kw'>super</span>::{<span class='ident'>Action</span>, <span class='ident'>Mode</span>, <span class='ident'>KillRing</span>};
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>disabled</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>kill_ring</span> <span class='op'>=</span> <span class='ident'>KillRing</span>::<span class='ident'>new</span>(<span class='number'>0</span>);
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;text&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;text&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>kill_ring</span>.<span class='ident'>slots</span>.<span class='ident'>is_empty</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>kill_ring</span>.<span class='ident'>index</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Action</span>::<span class='ident'>Kill</span>, <span class='ident'>kill_ring</span>.<span class='ident'>last_action</span>);
@@ -365,7 +375,7 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>one_kill</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>kill_ring</span> <span class='op'>=</span> <span class='ident'>KillRing</span>::<span class='ident'>new</span>(<span class='number'>2</span>);
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>kill_ring</span>.<span class='ident'>index</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>1</span>, <span class='ident'>kill_ring</span>.<span class='ident'>slots</span>.<span class='ident'>len</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;word1&quot;</span>, <span class='ident'>kill_ring</span>.<span class='ident'>slots</span>[<span class='number'>0</span>]);
@@ -373,10 +383,10 @@
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>kill_kill_forward</span>() {
+    <span class='kw'>fn</span> <span class='ident'>kill_append</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>kill_ring</span> <span class='op'>=</span> <span class='ident'>KillRing</span>::<span class='ident'>new</span>(<span class='number'>2</span>);
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='bool-val'>true</span>);
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot; word2&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot; word2&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>kill_ring</span>.<span class='ident'>index</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>1</span>, <span class='ident'>kill_ring</span>.<span class='ident'>slots</span>.<span class='ident'>len</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;word1 word2&quot;</span>, <span class='ident'>kill_ring</span>.<span class='ident'>slots</span>[<span class='number'>0</span>]);
@@ -384,10 +394,10 @@
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>kill_kill_backward</span>() {
+    <span class='kw'>fn</span> <span class='ident'>kill_backward</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>kill_ring</span> <span class='op'>=</span> <span class='ident'>KillRing</span>::<span class='ident'>new</span>(<span class='number'>2</span>);
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='bool-val'>false</span>);
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word2 &quot;</span>, <span class='bool-val'>false</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Prepend</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word2 &quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Prepend</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>kill_ring</span>.<span class='ident'>index</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>1</span>, <span class='ident'>kill_ring</span>.<span class='ident'>slots</span>.<span class='ident'>len</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;word2 word1&quot;</span>, <span class='ident'>kill_ring</span>.<span class='ident'>slots</span>[<span class='number'>0</span>]);
@@ -397,9 +407,9 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>kill_other_kill</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>kill_ring</span> <span class='op'>=</span> <span class='ident'>KillRing</span>::<span class='ident'>new</span>(<span class='number'>2</span>);
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
         <span class='ident'>kill_ring</span>.<span class='ident'>reset</span>();
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word2&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word2&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>1</span>, <span class='ident'>kill_ring</span>.<span class='ident'>index</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>2</span>, <span class='ident'>kill_ring</span>.<span class='ident'>slots</span>.<span class='ident'>len</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;word1&quot;</span>, <span class='ident'>kill_ring</span>.<span class='ident'>slots</span>[<span class='number'>0</span>]);
@@ -410,13 +420,13 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>many_kill</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>kill_ring</span> <span class='op'>=</span> <span class='ident'>KillRing</span>::<span class='ident'>new</span>(<span class='number'>2</span>);
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
         <span class='ident'>kill_ring</span>.<span class='ident'>reset</span>();
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word2&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word2&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
         <span class='ident'>kill_ring</span>.<span class='ident'>reset</span>();
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word3&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word3&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
         <span class='ident'>kill_ring</span>.<span class='ident'>reset</span>();
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word4&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word4&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>1</span>, <span class='ident'>kill_ring</span>.<span class='ident'>index</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>2</span>, <span class='ident'>kill_ring</span>.<span class='ident'>slots</span>.<span class='ident'>len</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;word3&quot;</span>, <span class='ident'>kill_ring</span>.<span class='ident'>slots</span>[<span class='number'>0</span>]);
@@ -427,9 +437,9 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>yank</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>kill_ring</span> <span class='op'>=</span> <span class='ident'>KillRing</span>::<span class='ident'>new</span>(<span class='number'>2</span>);
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
         <span class='ident'>kill_ring</span>.<span class='ident'>reset</span>();
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word2&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word2&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
 
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='string'>&quot;word2&quot;</span>.<span class='ident'>to_string</span>()), <span class='ident'>kill_ring</span>.<span class='ident'>yank</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Action</span>::<span class='ident'>Yank</span>(<span class='number'>5</span>), <span class='ident'>kill_ring</span>.<span class='ident'>last_action</span>);
@@ -440,9 +450,9 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>yank_pop</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>kill_ring</span> <span class='op'>=</span> <span class='ident'>KillRing</span>::<span class='ident'>new</span>(<span class='number'>2</span>);
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;word1&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
         <span class='ident'>kill_ring</span>.<span class='ident'>reset</span>();
-        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;longword2&quot;</span>, <span class='bool-val'>true</span>);
+        <span class='ident'>kill_ring</span>.<span class='ident'>kill</span>(<span class='string'>&quot;longword2&quot;</span>, <span class='ident'>Mode</span>::<span class='ident'>Append</span>);
 
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='prelude-val'>None</span>, <span class='ident'>kill_ring</span>.<span class='ident'>yank_pop</span>());
         <span class='ident'>kill_ring</span>.<span class='ident'>yank</span>();
