@@ -1313,6 +1313,9 @@
 <span id="1269">1269</span>
 <span id="1270">1270</span>
 <span id="1271">1271</span>
+<span id="1272">1272</span>
+<span id="1273">1273</span>
+<span id="1274">1274</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Readline for Rust</span>
 <span class='doccomment'>//!</span>
@@ -1886,6 +1889,9 @@
                     <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='prelude-val'>None</span>);
                 }
                 _ <span class='op'>=&gt;</span> {
+                    <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>==</span> <span class='ident'>candidates</span>.<span class='ident'>len</span>() {
+                        <span class='ident'>s</span>.<span class='ident'>snapshot</span>();
+                    }
                     <span class='kw'>break</span>;
                 }
             }
