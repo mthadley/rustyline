@@ -704,7 +704,7 @@
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chdir</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chdir</span><span class='op'>&lt;</span><span class='ident'>P</span>: ?<span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>path</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>cstr</span><span class='op'>|</span> {
         <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>chdir</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>()) }
     }));
@@ -747,7 +747,7 @@
 <span class='doccomment'>/// }</span>
 <span class='doccomment'>/// ```</span>
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>mkdir</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>, <span class='ident'>mode</span>: <span class='ident'>Mode</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>mkdir</span><span class='op'>&lt;</span><span class='ident'>P</span>: ?<span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>, <span class='ident'>mode</span>: <span class='ident'>Mode</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>path</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>cstr</span><span class='op'>|</span> {
         <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>mkdir</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>mode</span>.<span class='ident'>bits</span>() <span class='kw'>as</span> <span class='ident'>mode_t</span>) }
     }));
@@ -807,7 +807,7 @@
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chown</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>, <span class='ident'>owner</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>uid_t</span><span class='op'>&gt;</span>, <span class='ident'>group</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>gid_t</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chown</span><span class='op'>&lt;</span><span class='ident'>P</span>: ?<span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>, <span class='ident'>owner</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>uid_t</span><span class='op'>&gt;</span>, <span class='ident'>group</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>gid_t</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>path</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>cstr</span><span class='op'>|</span> {
         <span class='comment'>// According to the POSIX specification, -1 is used to indicate that</span>
         <span class='comment'>// owner and group, respectively, are not to be changed. Since uid_t and</span>
@@ -1018,7 +1018,7 @@
     }
 }
 
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unlink</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unlink</span><span class='op'>&lt;</span><span class='ident'>P</span>: ?<span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>path</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>cstr</span><span class='op'>|</span> {
         <span class='kw'>unsafe</span> {
             <span class='ident'>libc</span>::<span class='ident'>unlink</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>())
@@ -1028,7 +1028,7 @@
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chroot</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chroot</span><span class='op'>&lt;</span><span class='ident'>P</span>: ?<span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>path</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>cstr</span><span class='op'>|</span> {
         <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>chroot</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>()) }
     }));
@@ -1117,7 +1117,7 @@
     <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;execvpe&quot;</span>)]</span>
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ffi</span>::<span class='ident'>CString</span>;
 
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>pivot_root</span><span class='op'>&lt;</span><span class='ident'>P1</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span>, <span class='ident'>P2</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>pivot_root</span><span class='op'>&lt;</span><span class='ident'>P1</span>: ?<span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span>, <span class='ident'>P2</span>: ?<span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(
             <span class='ident'>new_root</span>: <span class='kw-2'>&amp;</span><span class='ident'>P1</span>, <span class='ident'>put_old</span>: <span class='kw-2'>&amp;</span><span class='ident'>P2</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>new_root</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>new_root</span><span class='op'>|</span> {
             <span class='ident'>put_old</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>put_old</span><span class='op'>|</span> {
@@ -1206,9 +1206,11 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "nix";
+        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
+    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>
