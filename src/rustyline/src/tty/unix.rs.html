@@ -359,13 +359,37 @@
 <span id="315">315</span>
 <span id="316">316</span>
 <span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
 </pre><pre class='rust '>
+<span class='doccomment'>//! Unix specific definitions</span>
 <span class='kw'>use</span> <span class='ident'>std</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='ident'>Read</span>, <span class='ident'>Write</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>, <span class='ident'>Read</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>;
 <span class='kw'>use</span> <span class='ident'>libc</span>;
 <span class='kw'>use</span> <span class='ident'>nix</span>;
+<span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>poll</span>;
 <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>sys</span>::<span class='ident'>signal</span>;
 <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>sys</span>::<span class='ident'>termios</span>;
 
@@ -373,9 +397,8 @@
 <span class='kw'>use</span> <span class='ident'>consts</span>::{<span class='self'>self</span>, <span class='ident'>KeyPress</span>};
 <span class='kw'>use</span> ::<span class='prelude-ty'>Result</span>;
 <span class='kw'>use</span> ::<span class='ident'>error</span>;
-<span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>RawReader</span>;
+<span class='kw'>use</span> <span class='kw'>super</span>::{<span class='ident'>RawMode</span>, <span class='ident'>RawReader</span>, <span class='ident'>Term</span>};
 
-<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Mode</span> <span class='op'>=</span> <span class='ident'>termios</span>::<span class='ident'>Termios</span>;
 <span class='kw'>const</span> <span class='ident'>STDIN_FILENO</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>STDIN_FILENO</span>;
 <span class='kw'>const</span> <span class='ident'>STDOUT_FILENO</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>STDOUT_FILENO</span>;
 
@@ -390,20 +413,6 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>all</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>, <span class='ident'>target_env</span> <span class='op'>=</span> <span class='string'>&quot;musl&quot;</span>))]</span>
 <span class='kw'>const</span> <span class='ident'>TIOCGWINSZ</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>0x5413</span>;
-
-<span class='doccomment'>/// Try to get the number of columns in the current terminal,</span>
-<span class='doccomment'>/// or assume 80 if it fails.</span>
-<span class='kw'>fn</span> <span class='ident'>get_columns</span>() <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
-    <span class='kw'>let</span> (<span class='ident'>cols</span>, _) <span class='op'>=</span> <span class='ident'>get_win_size</span>();
-    <span class='ident'>cols</span>
-}
-
-<span class='doccomment'>/// Try to get the number of rows in the current terminal,</span>
-<span class='doccomment'>/// or assume 24 if it fails.</span>
-<span class='kw'>fn</span> <span class='ident'>get_rows</span>() <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
-    <span class='kw'>let</span> (_, <span class='ident'>rows</span>) <span class='op'>=</span> <span class='ident'>get_win_size</span>();
-    <span class='ident'>rows</span>
-}
 
 <span class='kw'>fn</span> <span class='ident'>get_win_size</span>() <span class='op'>-&gt;</span> (<span class='ident'>usize</span>, <span class='ident'>usize</span>) {
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>zeroed</span>;
@@ -434,7 +443,7 @@
         <span class='prelude-val'>Ok</span>(<span class='ident'>term</span>) <span class='op'>=&gt;</span> {
             <span class='kw'>for</span> <span class='ident'>iter</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='ident'>UNSUPPORTED_TERM</span> {
                 <span class='kw'>if</span> (<span class='op'>*</span><span class='ident'>iter</span>).<span class='ident'>eq_ignore_ascii_case</span>(<span class='kw-2'>&amp;</span><span class='ident'>term</span>) {
-                    <span class='kw'>return</span> <span class='bool-val'>true</span>
+                    <span class='kw'>return</span> <span class='bool-val'>true</span>;
                 }
             }
             <span class='bool-val'>false</span>
@@ -449,49 +458,43 @@
     <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>isatty</span>(<span class='ident'>fd</span>) <span class='op'>!=</span> <span class='number'>0</span> }
 }
 
-<span class='doccomment'>/// Enable RAW mode for the terminal.</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>enable_raw_mode</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Mode</span><span class='op'>&gt;</span> {
-    <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>errno</span>::<span class='ident'>Errno</span>::<span class='ident'>ENOTTY</span>;
-    <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>sys</span>::<span class='ident'>termios</span>::{<span class='ident'>BRKINT</span>, <span class='ident'>CS8</span>, <span class='ident'>ECHO</span>, <span class='ident'>ICANON</span>, <span class='ident'>ICRNL</span>, <span class='ident'>IEXTEN</span>, <span class='ident'>INPCK</span>, <span class='ident'>ISIG</span>, <span class='ident'>ISTRIP</span>, <span class='ident'>IXON</span>,
-                            <span class='comment'>/* OPOST, */</span> <span class='ident'>VMIN</span>, <span class='ident'>VTIME</span>};
-    <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>is_a_tty</span>(<span class='ident'>STDIN_FILENO</span>) {
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='prelude-val'>Err</span>(<span class='ident'>nix</span>::<span class='ident'>Error</span>::<span class='ident'>from_errno</span>(<span class='ident'>ENOTTY</span>)));
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Mode</span> <span class='op'>=</span> <span class='ident'>termios</span>::<span class='ident'>Termios</span>;
+
+<span class='kw'>impl</span> <span class='ident'>RawMode</span> <span class='kw'>for</span> <span class='ident'>Mode</span> {
+    <span class='doccomment'>/// Disable RAW mode for the terminal.</span>
+    <span class='kw'>fn</span> <span class='ident'>disable_raw_mode</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcsetattr</span>(<span class='ident'>STDIN_FILENO</span>, <span class='ident'>termios</span>::<span class='ident'>TCSADRAIN</span>, <span class='self'>self</span>));
+        <span class='prelude-val'>Ok</span>(())
     }
-    <span class='kw'>let</span> <span class='ident'>original_mode</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcgetattr</span>(<span class='ident'>STDIN_FILENO</span>));
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>raw</span> <span class='op'>=</span> <span class='ident'>original_mode</span>;
-    <span class='comment'>// disable BREAK interrupt, CR to NL conversion on input,</span>
-    <span class='comment'>// input parity check, strip high bit (bit 8), output flow control</span>
-    <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>BRKINT</span> <span class='op'>|</span> <span class='ident'>ICRNL</span> <span class='op'>|</span> <span class='ident'>INPCK</span> <span class='op'>|</span> <span class='ident'>ISTRIP</span> <span class='op'>|</span> <span class='ident'>IXON</span>);
-    <span class='comment'>// we don&#39;t want raw output, it turns newlines into straight linefeeds</span>
-    <span class='comment'>// raw.c_oflag = raw.c_oflag &amp; !(OPOST); // disable all output processing</span>
-    <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>|</span> (<span class='ident'>CS8</span>); <span class='comment'>// character-size mark (8 bits)</span>
-    <span class='comment'>// disable echoing, canonical mode, extended input processing and signals</span>
-    <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>ECHO</span> <span class='op'>|</span> <span class='ident'>ICANON</span> <span class='op'>|</span> <span class='ident'>IEXTEN</span> <span class='op'>|</span> <span class='ident'>ISIG</span>);
-    <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VMIN</span>] <span class='op'>=</span> <span class='number'>1</span>; <span class='comment'>// One character-at-a-time input</span>
-    <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VTIME</span>] <span class='op'>=</span> <span class='number'>0</span>; <span class='comment'>// with blocking read</span>
-    <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcsetattr</span>(<span class='ident'>STDIN_FILENO</span>, <span class='ident'>termios</span>::<span class='ident'>TCSAFLUSH</span>, <span class='kw-2'>&amp;</span><span class='ident'>raw</span>));
-    <span class='prelude-val'>Ok</span>(<span class='ident'>original_mode</span>)
 }
 
-<span class='doccomment'>/// Disable RAW mode for the terminal.</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>disable_raw_mode</span>(<span class='ident'>original_mode</span>: <span class='ident'>Mode</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcsetattr</span>(<span class='ident'>STDIN_FILENO</span>, <span class='ident'>termios</span>::<span class='ident'>TCSAFLUSH</span>, <span class='kw-2'>&amp;</span><span class='ident'>original_mode</span>));
-    <span class='prelude-val'>Ok</span>(())
-}
+<span class='comment'>// Rust std::io::Stdin is buffered with no way to know if bytes are available.</span>
+<span class='comment'>// So we use low-level stuff instead...</span>
+<span class='kw'>struct</span> <span class='ident'>StdinRaw</span> {}
 
-<span class='kw'>fn</span> <span class='ident'>clear_screen</span>(<span class='ident'>w</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Write</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>w</span>.<span class='ident'>write_all</span>(<span class='string'>b&quot;\x1b[H\x1b[2J&quot;</span>));
-    <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>w</span>.<span class='ident'>flush</span>());
-    <span class='prelude-val'>Ok</span>(())
+<span class='kw'>impl</span> <span class='ident'>Read</span> <span class='kw'>for</span> <span class='ident'>StdinRaw</span> {
+    <span class='kw'>fn</span> <span class='ident'>read</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>buf</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> {
+            <span class='ident'>libc</span>::<span class='ident'>read</span>(<span class='ident'>STDIN_FILENO</span>,
+                       <span class='ident'>buf</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>,
+                       <span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>libc</span>::<span class='ident'>size_t</span>)
+        };
+        <span class='kw'>if</span> <span class='ident'>res</span> <span class='op'>==</span> <span class='op'>-</span><span class='number'>1</span> {
+            <span class='prelude-val'>Err</span>(<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>last_os_error</span>())
+        } <span class='kw'>else</span> {
+            <span class='prelude-val'>Ok</span>(<span class='ident'>res</span> <span class='kw'>as</span> <span class='ident'>usize</span>)
+        }
+    }
 }
 
 <span class='doccomment'>/// Console input reader</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>PosixRawReader</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> {
-    <span class='ident'>chars</span>: <span class='ident'>char_iter</span>::<span class='ident'>Chars</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>,
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>PosixRawReader</span> {
+    <span class='ident'>chars</span>: <span class='ident'>char_iter</span>::<span class='ident'>Chars</span><span class='op'>&lt;</span><span class='ident'>StdinRaw</span><span class='op'>&gt;</span>,
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>Read</span><span class='op'>&gt;</span> <span class='ident'>PosixRawReader</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> {
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>stdin</span>: <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>PosixRawReader</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>PosixRawReader</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>PosixRawReader</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>stdin</span> <span class='op'>=</span> <span class='ident'>StdinRaw</span> {};
         <span class='prelude-val'>Ok</span>(<span class='ident'>PosixRawReader</span> { <span class='ident'>chars</span>: <span class='ident'>char_iter</span>::<span class='ident'>chars</span>(<span class='ident'>stdin</span>) })
     }
 
@@ -567,16 +570,25 @@
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>Read</span><span class='op'>&gt;</span> <span class='ident'>RawReader</span> <span class='kw'>for</span> <span class='ident'>PosixRawReader</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> {
-    <span class='comment'>// As there is no read timeout to properly handle single ESC key,</span>
-    <span class='comment'>// we make possible to deactivate escape sequence processing.</span>
-    <span class='kw'>fn</span> <span class='ident'>next_key</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>esc_seq</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>KeyPress</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>RawReader</span> <span class='kw'>for</span> <span class='ident'>PosixRawReader</span> {
+    <span class='kw'>fn</span> <span class='ident'>next_key</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>timeout_ms</span>: <span class='ident'>i32</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>KeyPress</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>next_char</span>());
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>key</span> <span class='op'>=</span> <span class='ident'>consts</span>::<span class='ident'>char_to_key_press</span>(<span class='ident'>c</span>);
-        <span class='kw'>if</span> <span class='ident'>esc_seq</span> <span class='op'>&amp;&amp;</span> <span class='ident'>key</span> <span class='op'>==</span> <span class='ident'>KeyPress</span>::<span class='ident'>Esc</span> {
-            <span class='comment'>// escape sequence</span>
-            <span class='ident'>key</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>escape_sequence</span>());
+        <span class='kw'>if</span> <span class='ident'>key</span> <span class='op'>==</span> <span class='ident'>KeyPress</span>::<span class='ident'>Esc</span> {
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fds</span> <span class='op'>=</span>
+                [<span class='ident'>poll</span>::<span class='ident'>PollFd</span>::<span class='ident'>new</span>(<span class='ident'>STDIN_FILENO</span>, <span class='ident'>poll</span>::<span class='ident'>POLLIN</span>, <span class='ident'>poll</span>::<span class='ident'>EventFlags</span>::<span class='ident'>empty</span>())];
+            <span class='kw'>match</span> <span class='ident'>poll</span>::<span class='ident'>poll</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fds</span>, <span class='ident'>timeout_ms</span>) {
+                <span class='prelude-val'>Ok</span>(<span class='ident'>n</span>) <span class='kw'>if</span> <span class='ident'>n</span> <span class='op'>==</span> <span class='number'>0</span> <span class='op'>=&gt;</span> {
+                    <span class='comment'>// single escape</span>
+                }
+                <span class='prelude-val'>Ok</span>(_) <span class='op'>=&gt;</span> {
+                    <span class='comment'>// escape sequence</span>
+                    <span class='ident'>key</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>escape_sequence</span>())
+                }
+                <span class='comment'>// Err(ref e) if e.kind() == ErrorKind::Interrupted =&gt; continue,</span>
+                <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>e</span>.<span class='ident'>into</span>()),
+            }
         }
         <span class='prelude-val'>Ok</span>(<span class='ident'>key</span>)
     }
@@ -596,26 +608,29 @@
 <span class='kw'>fn</span> <span class='ident'>install_sigwinch_handler</span>() {
     <span class='ident'>SIGWINCH_ONCE</span>.<span class='ident'>call_once</span>(<span class='op'>||</span> <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='ident'>sigwinch</span> <span class='op'>=</span> <span class='ident'>signal</span>::<span class='ident'>SigAction</span>::<span class='ident'>new</span>(<span class='ident'>signal</span>::<span class='ident'>SigHandler</span>::<span class='ident'>Handler</span>(<span class='ident'>sigwinch_handler</span>),
-                                              <span class='ident'>signal</span>::<span class='ident'>SaFlag</span>::<span class='ident'>empty</span>(),
+                                              <span class='ident'>signal</span>::<span class='ident'>SaFlags</span>::<span class='ident'>empty</span>(),
                                               <span class='ident'>signal</span>::<span class='ident'>SigSet</span>::<span class='ident'>empty</span>());
         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>signal</span>::<span class='ident'>sigaction</span>(<span class='ident'>signal</span>::<span class='ident'>SIGWINCH</span>, <span class='kw-2'>&amp;</span><span class='ident'>sigwinch</span>);
     });
 }
 
-<span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span> <span class='ident'>sigwinch_handler</span>(_: <span class='ident'>signal</span>::<span class='ident'>SigNum</span>) {
+<span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span> <span class='ident'>sigwinch_handler</span>(_: <span class='ident'>libc</span>::<span class='ident'>c_int</span>) {
     <span class='ident'>SIGWINCH</span>.<span class='ident'>store</span>(<span class='bool-val'>true</span>, <span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>);
 }
 
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Terminal</span> <span class='op'>=</span> <span class='ident'>PosixTerminal</span>;
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>,<span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>PosixTerminal</span> {
     <span class='ident'>unsupported</span>: <span class='ident'>bool</span>,
     <span class='ident'>stdin_isatty</span>: <span class='ident'>bool</span>,
 }
 
-<span class='kw'>impl</span> <span class='ident'>PosixTerminal</span> {
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>PosixTerminal</span> {
+<span class='kw'>impl</span> <span class='ident'>Term</span> <span class='kw'>for</span> <span class='ident'>PosixTerminal</span> {
+    <span class='kw'>type</span> <span class='ident'>Reader</span> <span class='op'>=</span> <span class='ident'>PosixRawReader</span>;
+    <span class='kw'>type</span> <span class='ident'>Mode</span> <span class='op'>=</span> <span class='ident'>Mode</span>;
+
+    <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>PosixTerminal</span> {
         <span class='kw'>let</span> <span class='ident'>term</span> <span class='op'>=</span> <span class='ident'>PosixTerminal</span> {
             <span class='ident'>unsupported</span>: <span class='ident'>is_unsupported_term</span>(),
             <span class='ident'>stdin_isatty</span>: <span class='ident'>is_a_tty</span>(<span class='ident'>STDIN_FILENO</span>),
@@ -629,40 +644,69 @@
     <span class='comment'>// Init checks:</span>
 
     <span class='doccomment'>/// Check if current terminal can provide a rich line-editing user interface.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_unsupported</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+    <span class='kw'>fn</span> <span class='ident'>is_unsupported</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='self'>self</span>.<span class='ident'>unsupported</span>
     }
 
     <span class='doccomment'>/// check if stdin is connected to a terminal.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_stdin_tty</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+    <span class='kw'>fn</span> <span class='ident'>is_stdin_tty</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='self'>self</span>.<span class='ident'>stdin_isatty</span>
     }
 
     <span class='comment'>// Interactive loop:</span>
 
-    <span class='doccomment'>/// Get the number of columns in the current terminal.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_columns</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
-        <span class='ident'>get_columns</span>()
+    <span class='doccomment'>/// Try to get the number of columns in the current terminal,</span>
+    <span class='doccomment'>/// or assume 80 if it fails.</span>
+    <span class='kw'>fn</span> <span class='ident'>get_columns</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+        <span class='kw'>let</span> (<span class='ident'>cols</span>, _) <span class='op'>=</span> <span class='ident'>get_win_size</span>();
+        <span class='ident'>cols</span>
     }
 
-    <span class='doccomment'>/// Get the number of rows in the current terminal.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_rows</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
-        <span class='ident'>get_rows</span>()
+    <span class='doccomment'>/// Try to get the number of rows in the current terminal,</span>
+    <span class='doccomment'>/// or assume 24 if it fails.</span>
+    <span class='kw'>fn</span> <span class='ident'>get_rows</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+        <span class='kw'>let</span> (_, <span class='ident'>rows</span>) <span class='op'>=</span> <span class='ident'>get_win_size</span>();
+        <span class='ident'>rows</span>
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>enable_raw_mode</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Mode</span><span class='op'>&gt;</span> {
+        <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>errno</span>::<span class='ident'>Errno</span>::<span class='ident'>ENOTTY</span>;
+        <span class='kw'>use</span> <span class='ident'>nix</span>::<span class='ident'>sys</span>::<span class='ident'>termios</span>::{<span class='ident'>BRKINT</span>, <span class='ident'>CS8</span>, <span class='ident'>ECHO</span>, <span class='ident'>ICANON</span>, <span class='ident'>ICRNL</span>, <span class='ident'>IEXTEN</span>, <span class='ident'>INPCK</span>, <span class='ident'>ISIG</span>, <span class='ident'>ISTRIP</span>,
+                                <span class='ident'>IXON</span>, <span class='comment'>/* OPOST, */</span> <span class='ident'>VMIN</span>, <span class='ident'>VTIME</span>};
+        <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>stdin_isatty</span> {
+            <span class='macro'>try</span><span class='macro'>!</span>(<span class='prelude-val'>Err</span>(<span class='ident'>nix</span>::<span class='ident'>Error</span>::<span class='ident'>from_errno</span>(<span class='ident'>ENOTTY</span>)));
+        }
+        <span class='kw'>let</span> <span class='ident'>original_mode</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcgetattr</span>(<span class='ident'>STDIN_FILENO</span>));
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>raw</span> <span class='op'>=</span> <span class='ident'>original_mode</span>;
+        <span class='comment'>// disable BREAK interrupt, CR to NL conversion on input,</span>
+        <span class='comment'>// input parity check, strip high bit (bit 8), output flow control</span>
+        <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_iflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>BRKINT</span> <span class='op'>|</span> <span class='ident'>ICRNL</span> <span class='op'>|</span> <span class='ident'>INPCK</span> <span class='op'>|</span> <span class='ident'>ISTRIP</span> <span class='op'>|</span> <span class='ident'>IXON</span>);
+        <span class='comment'>// we don&#39;t want raw output, it turns newlines into straight linefeeds</span>
+        <span class='comment'>// raw.c_oflag = raw.c_oflag &amp; !(OPOST); // disable all output processing</span>
+        <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_cflag</span> <span class='op'>|</span> (<span class='ident'>CS8</span>); <span class='comment'>// character-size mark (8 bits)</span>
+        <span class='comment'>// disable echoing, canonical mode, extended input processing and signals</span>
+        <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>c_lflag</span> <span class='kw-2'>&amp;</span> <span class='op'>!</span>(<span class='ident'>ECHO</span> <span class='op'>|</span> <span class='ident'>ICANON</span> <span class='op'>|</span> <span class='ident'>IEXTEN</span> <span class='op'>|</span> <span class='ident'>ISIG</span>);
+        <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VMIN</span>] <span class='op'>=</span> <span class='number'>1</span>; <span class='comment'>// One character-at-a-time input</span>
+        <span class='ident'>raw</span>.<span class='ident'>c_cc</span>[<span class='ident'>VTIME</span>] <span class='op'>=</span> <span class='number'>0</span>; <span class='comment'>// with blocking read</span>
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>termios</span>::<span class='ident'>tcsetattr</span>(<span class='ident'>STDIN_FILENO</span>, <span class='ident'>termios</span>::<span class='ident'>TCSADRAIN</span>, <span class='kw-2'>&amp;</span><span class='ident'>raw</span>));
+        <span class='prelude-val'>Ok</span>(<span class='ident'>original_mode</span>)
     }
 
     <span class='doccomment'>/// Create a RAW reader</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>create_reader</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>PosixRawReader</span><span class='op'>&lt;</span><span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Stdin</span><span class='op'>&gt;&gt;</span> {
-        <span class='ident'>PosixRawReader</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>stdin</span>())
+    <span class='kw'>fn</span> <span class='ident'>create_reader</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>PosixRawReader</span><span class='op'>&gt;</span> {
+        <span class='ident'>PosixRawReader</span>::<span class='ident'>new</span>()
     }
 
     <span class='doccomment'>/// Check if a SIGWINCH signal has been received</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>sigwinch</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+    <span class='kw'>fn</span> <span class='ident'>sigwinch</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='ident'>SIGWINCH</span>.<span class='ident'>compare_and_swap</span>(<span class='bool-val'>true</span>, <span class='bool-val'>false</span>, <span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>)
     }
 
     <span class='doccomment'>/// Clear the screen. Used to handle ctrl+l</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>clear_screen</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>w</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Write</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='ident'>clear_screen</span>(<span class='ident'>w</span>)
+    <span class='kw'>fn</span> <span class='ident'>clear_screen</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>w</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Write</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>w</span>.<span class='ident'>write_all</span>(<span class='string'>b&quot;\x1b[H\x1b[2J&quot;</span>));
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>w</span>.<span class='ident'>flush</span>());
+        <span class='prelude-val'>Ok</span>(())
     }
 }
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.5.1/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.7.0/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -269,6 +269,24 @@
 <span id="225">225</span>
 <span id="226">226</span>
 <span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Rust friendly bindings to the various *nix system functions.</span>
 <span class='doccomment'>//!</span>
@@ -285,12 +303,23 @@
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>bitflags</span>;
 
-<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>libc</span>;
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>cfg_if</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>void</span>;
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>nix_test</span> <span class='kw'>as</span> <span class='ident'>nixtest</span>;
 
-<span class='comment'>// Re-exports</span>
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>mod</span> <span class='ident'>macros</span>;
+
+<span class='comment'>// In rust 1.8+ this should be `pub extern crate libc` but prior</span>
+<span class='comment'>// to https://github.com/rust-lang/rust/issues/26775 being resolved</span>
+<span class='comment'>// it is necessary to get a little creative.</span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>libc</span> {
+    <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>libc</span>;
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>libc</span>::<span class='op'>*</span>;
+}
+
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>libc</span>::{<span class='ident'>c_int</span>, <span class='ident'>c_void</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>errno</span>::<span class='ident'>Errno</span>;
 
@@ -301,7 +330,7 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;android&quot;</span>))]</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>mount</span>;
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>))]</span>
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>mqueue</span>;
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;macos&quot;</span>))]</span>
@@ -313,6 +342,13 @@
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>sched</span>;
 
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>sys</span>;
+
+<span class='comment'>// This can be implemented for other platforms as soon as libc</span>
+<span class='comment'>// provides bindings for them.</span>
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>all</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>,
+          <span class='ident'>any</span>(<span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86&quot;</span>, <span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86_64&quot;</span>)))]</span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>ucontext</span>;
+
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>unistd</span>;
 
 <span class='comment'>/*

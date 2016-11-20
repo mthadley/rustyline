@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.5.1/src/sys/stat.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.7.0/src/sys/stat.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>stat.rs.html -- source</title>
@@ -150,12 +150,15 @@
 <span id="106">106</span>
 <span id="107">107</span>
 <span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
 </pre><pre class='rust '>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>libc</span>::<span class='ident'>dev_t</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>libc</span>::<span class='ident'>stat</span> <span class='kw'>as</span> <span class='ident'>FileStat</span>;
 
 <span class='kw'>use</span> {<span class='ident'>Errno</span>, <span class='prelude-ty'>Result</span>, <span class='ident'>NixPath</span>};
-<span class='kw'>use</span> <span class='ident'>libc</span>::<span class='ident'>mode_t</span>;
+<span class='kw'>use</span> <span class='ident'>libc</span>::{<span class='self'>self</span>, <span class='ident'>mode_t</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>os</span>::<span class='ident'>unix</span>::<span class='ident'>io</span>::<span class='ident'>RawFd</span>;
 
@@ -171,34 +174,37 @@
 
 <span class='macro'>bitflags</span><span class='macro'>!</span>(
     <span class='ident'>flags</span> <span class='ident'>SFlag</span>: <span class='ident'>mode_t</span> {
-        <span class='kw'>const</span> <span class='ident'>S_IFREG</span>  <span class='op'>=</span> <span class='number'>0o100000</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IFCHR</span>  <span class='op'>=</span> <span class='number'>0o020000</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IFBLK</span>  <span class='op'>=</span> <span class='number'>0o060000</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IFIFO</span>  <span class='op'>=</span> <span class='number'>0o010000</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IFSOCK</span> <span class='op'>=</span> <span class='number'>0o140000</span>
+        <span class='kw'>const</span> <span class='ident'>S_IFIFO</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IFIFO</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IFCHR</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IFCHR</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IFDIR</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IFDIR</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IFBLK</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IFBLK</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IFREG</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IFREG</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IFLNK</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IFLNK</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IFSOCK</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IFSOCK</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IFMT</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IFMT</span>,
     }
 );
 
 <span class='macro'>bitflags</span><span class='macro'>!</span> {
     <span class='ident'>flags</span> <span class='ident'>Mode</span>: <span class='ident'>mode_t</span> {
-        <span class='kw'>const</span> <span class='ident'>S_IRWXU</span> <span class='op'>=</span> <span class='number'>0o0700</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IRUSR</span> <span class='op'>=</span> <span class='number'>0o0400</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IWUSR</span> <span class='op'>=</span> <span class='number'>0o0200</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IXUSR</span> <span class='op'>=</span> <span class='number'>0o0100</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IRWXU</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IRWXU</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IRUSR</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IRUSR</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IWUSR</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IWUSR</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IXUSR</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IXUSR</span>,
 
-        <span class='kw'>const</span> <span class='ident'>S_IRWXG</span> <span class='op'>=</span> <span class='number'>0o0070</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IRGRP</span> <span class='op'>=</span> <span class='number'>0o0040</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IWGRP</span> <span class='op'>=</span> <span class='number'>0o0020</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IXGRP</span> <span class='op'>=</span> <span class='number'>0o0010</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IRWXG</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IRWXG</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IRGRP</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IRGRP</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IWGRP</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IWGRP</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IXGRP</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IXGRP</span>,
 
-        <span class='kw'>const</span> <span class='ident'>S_IRWXO</span> <span class='op'>=</span> <span class='number'>0o0007</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IROTH</span> <span class='op'>=</span> <span class='number'>0o0004</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IWOTH</span> <span class='op'>=</span> <span class='number'>0o0002</span>,
-        <span class='kw'>const</span> <span class='ident'>S_IXOTH</span> <span class='op'>=</span> <span class='number'>0o0001</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IRWXO</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IRWXO</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IROTH</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IROTH</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IWOTH</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IWOTH</span>,
+        <span class='kw'>const</span> <span class='ident'>S_IXOTH</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_IXOTH</span>,
 
-        <span class='kw'>const</span> <span class='ident'>S_ISUID</span> <span class='op'>=</span> <span class='number'>0o4000</span>,
-        <span class='kw'>const</span> <span class='ident'>S_ISGID</span> <span class='op'>=</span> <span class='number'>0o2000</span>,
-        <span class='kw'>const</span> <span class='ident'>S_ISVTX</span> <span class='op'>=</span> <span class='number'>0o1000</span>,
+        <span class='kw'>const</span> <span class='ident'>S_ISUID</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_ISUID</span> <span class='kw'>as</span> <span class='ident'>mode_t</span>,
+        <span class='kw'>const</span> <span class='ident'>S_ISGID</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_ISGID</span> <span class='kw'>as</span> <span class='ident'>mode_t</span>,
+        <span class='kw'>const</span> <span class='ident'>S_ISVTX</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>S_ISVTX</span> <span class='kw'>as</span> <span class='ident'>mode_t</span>,
     }
 }
 

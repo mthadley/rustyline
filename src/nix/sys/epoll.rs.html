@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.5.1/src/sys/epoll.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.7.0/src/sys/epoll.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>epoll.rs.html -- source</title>
@@ -137,6 +137,7 @@
 <span id="93">93</span>
 <span id="94">94</span>
 <span id="95">95</span>
+<span id="96">96</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> {<span class='ident'>Errno</span>, <span class='prelude-ty'>Result</span>};
 <span class='kw'>use</span> <span class='ident'>libc</span>::<span class='ident'>c_int</span>;
@@ -167,6 +168,7 @@
         <span class='kw'>const</span> <span class='ident'>EPOLLERR</span> <span class='op'>=</span> <span class='number'>0x008</span>,
         <span class='kw'>const</span> <span class='ident'>EPOLLHUP</span> <span class='op'>=</span> <span class='number'>0x010</span>,
         <span class='kw'>const</span> <span class='ident'>EPOLLRDHUP</span> <span class='op'>=</span> <span class='number'>0x2000</span>,
+        <span class='kw'>const</span> <span class='ident'>EPOLLEXCLUSIVE</span> <span class='op'>=</span> <span class='number'>1</span> <span class='op'>&lt;&lt;</span> <span class='number'>28</span>,
         <span class='kw'>const</span> <span class='ident'>EPOLLWAKEUP</span> <span class='op'>=</span> <span class='number'>1</span> <span class='op'>&lt;&lt;</span> <span class='number'>29</span>,
         <span class='kw'>const</span> <span class='ident'>EPOLLONESHOT</span> <span class='op'>=</span> <span class='number'>1</span> <span class='op'>&lt;&lt;</span> <span class='number'>30</span>,
         <span class='kw'>const</span> <span class='ident'>EPOLLET</span> <span class='op'>=</span> <span class='number'>1</span> <span class='op'>&lt;&lt;</span> <span class='number'>31</span>

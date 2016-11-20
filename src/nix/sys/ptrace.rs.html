@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.5.1/src/sys/ptrace.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.7.0/src/sys/ptrace.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>ptrace.rs.html -- source</title>
@@ -244,7 +244,7 @@
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>ptrace</span>(<span class='ident'>request</span>, <span class='ident'>pid</span>, <span class='ident'>addr</span>, <span class='ident'>data</span>) }).<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='number'>0</span>)
 }
 
-<span class='doccomment'>/// Set options, as with ptrace(PTRACE_SETOPTIONS,...).</span>
+<span class='doccomment'>/// Set options, as with `ptrace(PTRACE_SETOPTIONS,...)`.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ptrace_setoptions</span>(<span class='ident'>pid</span>: <span class='ident'>pid_t</span>, <span class='ident'>options</span>: <span class='ident'>ptrace</span>::<span class='ident'>PtraceOptions</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>ptrace</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;

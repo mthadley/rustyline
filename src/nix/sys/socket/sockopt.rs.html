@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.5.1/src/sys/socket/sockopt.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.7.0/src/sys/socket/sockopt.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>sockopt.rs.html -- source</title>
@@ -466,11 +466,21 @@
 <span id="422">422</span>
 <span id="423">423</span>
 <span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='kw'>super</span>::{<span class='ident'>ffi</span>, <span class='ident'>consts</span>, <span class='ident'>GetSockOpt</span>, <span class='ident'>SetSockOpt</span>};
 <span class='kw'>use</span> {<span class='ident'>Errno</span>, <span class='prelude-ty'>Result</span>};
 <span class='kw'>use</span> <span class='ident'>sys</span>::<span class='ident'>time</span>::<span class='ident'>TimeVal</span>;
 <span class='kw'>use</span> <span class='ident'>libc</span>::{<span class='ident'>c_int</span>, <span class='ident'>uint8_t</span>, <span class='ident'>c_void</span>, <span class='ident'>socklen_t</span>};
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>)]</span>
+<span class='kw'>use</span> <span class='ident'>libc</span>::<span class='ident'>sockaddr_in</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>os</span>::<span class='ident'>unix</span>::<span class='ident'>io</span>::<span class='ident'>RawFd</span>;
 
@@ -516,10 +526,6 @@
 
 <span class='comment'>// Helper to generate the sockopt accessors</span>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>sockopt_impl</span> {
-    (<span class='ident'>GetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
-        <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>GetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>, <span class='ident'>GetStruct</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span><span class='op'>&gt;</span>);
-    };
-
     (<span class='ident'>GetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='ident'>bool</span>) <span class='op'>=&gt;</span> {
         <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>GetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='ident'>bool</span>, <span class='ident'>GetBool</span>);
     };
@@ -532,17 +538,6 @@
         <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>GetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='ident'>usize</span>, <span class='ident'>GetUsize</span>);
     };
 
-    (<span class='ident'>GetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>:<span class='ident'>ty</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>getter</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
-        <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
-        <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>;
-
-        <span class='macro'>getsockopt_impl</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>getter</span>);
-    };
-
-    (<span class='ident'>SetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
-        <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>SetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>, <span class='ident'>SetStruct</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span><span class='op'>&gt;</span>);
-    };
-
     (<span class='ident'>SetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='ident'>bool</span>) <span class='op'>=&gt;</span> {
         <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>SetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='ident'>bool</span>, <span class='ident'>SetBool</span>);
     };
@@ -553,6 +548,37 @@
 
     (<span class='ident'>SetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='ident'>usize</span>) <span class='op'>=&gt;</span> {
         <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>SetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='ident'>usize</span>, <span class='ident'>SetUsize</span>);
+    };
+
+    (<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='ident'>bool</span>) <span class='op'>=&gt;</span> {
+        <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='ident'>bool</span>, <span class='ident'>GetBool</span>, <span class='ident'>SetBool</span>);
+    };
+
+    (<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='ident'>u8</span>) <span class='op'>=&gt;</span> {
+        <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='ident'>u8</span>, <span class='ident'>GetU8</span>, <span class='ident'>SetU8</span>);
+    };
+
+    (<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='ident'>usize</span>) <span class='op'>=&gt;</span> {
+        <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='ident'>usize</span>, <span class='ident'>GetUsize</span>, <span class='ident'>SetUsize</span>);
+    };
+
+    <span class='comment'>/*
+     * Matchers with generic getter types must be placed at the end, so
+     * they&#39;ll only match _after_ specialized matchers fail
+     */</span>
+    (<span class='ident'>GetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
+        <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>GetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>, <span class='ident'>GetStruct</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span><span class='op'>&gt;</span>);
+    };
+
+    (<span class='ident'>GetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>:<span class='ident'>ty</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>getter</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
+        <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
+        <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>;
+
+        <span class='macro'>getsockopt_impl</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>getter</span>);
+    };
+
+    (<span class='ident'>SetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
+        <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>SetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>, <span class='ident'>SetStruct</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span><span class='op'>&gt;</span>);
     };
 
     (<span class='ident'>SetOnly</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>:<span class='ident'>ty</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>setter</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
@@ -568,18 +594,6 @@
 
         <span class='macro'>setsockopt_impl</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>setter</span>);
         <span class='macro'>getsockopt_impl</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>getter</span>);
-    };
-
-    (<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='ident'>bool</span>) <span class='op'>=&gt;</span> {
-        <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='ident'>bool</span>, <span class='ident'>GetBool</span>, <span class='ident'>SetBool</span>);
-    };
-
-    (<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='ident'>u8</span>) <span class='op'>=&gt;</span> {
-        <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='ident'>u8</span>, <span class='ident'>GetU8</span>, <span class='ident'>SetU8</span>);
-    };
-
-    (<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='ident'>usize</span>) <span class='op'>=&gt;</span> {
-        <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>, <span class='ident'>usize</span>, <span class='ident'>GetUsize</span>, <span class='ident'>SetUsize</span>);
     };
 
     (<span class='ident'>Both</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>level</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>flag</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
@@ -637,6 +651,8 @@
           <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>,
           <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;nacl&quot;</span>))]</span>
 <span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>GetOnly</span>, <span class='ident'>AcceptConn</span>, <span class='ident'>consts</span>::<span class='ident'>SOL_SOCKET</span>, <span class='ident'>consts</span>::<span class='ident'>SO_ACCEPTCONN</span>, <span class='ident'>bool</span>);
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>)]</span>
+<span class='macro'>sockopt_impl</span><span class='macro'>!</span>(<span class='ident'>GetOnly</span>, <span class='ident'>OriginalDst</span>, <span class='ident'>consts</span>::<span class='ident'>SOL_IP</span>, <span class='ident'>consts</span>::<span class='ident'>SO_ORIGINAL_DST</span>, <span class='ident'>sockaddr_in</span>);
 
 <span class='comment'>/*
  *

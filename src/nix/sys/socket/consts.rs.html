@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.5.1/src/sys/socket/consts.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.7.0/src/sys/socket/consts.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>consts.rs.html -- source</title>
@@ -475,6 +475,9 @@
 <span id="431">431</span>
 <span id="432">432</span>
 <span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
 </pre><pre class='rust '>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>os</span>::<span class='op'>*</span>;
 
@@ -537,6 +540,8 @@
     <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SO_TIMESTAMP</span>: <span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>29</span>;
     <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SO_TYPE</span>: <span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>3</span>;
     <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SO_BUSY_POLL</span>: <span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>46</span>;
+    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>)]</span>
+    <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SO_ORIGINAL_DST</span>: <span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>80</span>;
 
     <span class='comment'>// Socket options for TCP sockets</span>
     <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>TCP_NODELAY</span>: <span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>1</span>;
@@ -574,6 +579,7 @@
             <span class='kw'>const</span> <span class='ident'>MSG_DONTWAIT</span> <span class='op'>=</span> <span class='number'>0x0040</span>,
             <span class='kw'>const</span> <span class='ident'>MSG_EOR</span>      <span class='op'>=</span> <span class='number'>0x0080</span>,
             <span class='kw'>const</span> <span class='ident'>MSG_ERRQUEUE</span> <span class='op'>=</span> <span class='number'>0x2000</span>,
+            <span class='kw'>const</span> <span class='ident'>MSG_CMSG_CLOEXEC</span> <span class='op'>=</span> <span class='number'>0x40000000</span>,
         }
     }
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.5.1/src/sys/mman.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.7.0/src/sys/mman.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mman.rs.html -- source</title>
@@ -293,16 +293,16 @@
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>consts</span>::<span class='op'>*</span>;
 
-<span class='macro'>bitflags</span><span class='macro'>!</span>{
-    <span class='ident'>flags</span> <span class='ident'>ProtFlags</span> : <span class='ident'>libc</span>::<span class='ident'>c_int</span> {
-        <span class='kw'>const</span> <span class='ident'>PROT_NONE</span>      <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>PROT_NONE</span>,
-        <span class='kw'>const</span> <span class='ident'>PROT_READ</span>      <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>PROT_READ</span>,
-        <span class='kw'>const</span> <span class='ident'>PROT_WRITE</span>     <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>PROT_WRITE</span>,
-        <span class='kw'>const</span> <span class='ident'>PROT_EXEC</span>      <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>PROT_EXEC</span>,
+<span class='macro'>libc_bitflags</span><span class='macro'>!</span>{
+    <span class='ident'>flags</span> <span class='ident'>ProtFlags</span>: <span class='ident'>libc</span>::<span class='ident'>c_int</span> {
+        <span class='ident'>PROT_NONE</span>,
+        <span class='ident'>PROT_READ</span>,
+        <span class='ident'>PROT_WRITE</span>,
+        <span class='ident'>PROT_EXEC</span>,
         <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;android&quot;</span>))]</span>
-        <span class='kw'>const</span> <span class='ident'>PROT_GROWSDOWN</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>PROT_GROWSDOWN</span>,
+        <span class='ident'>PROT_GROWSDOWN</span>,
         <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;android&quot;</span>))]</span>
-        <span class='kw'>const</span> <span class='ident'>PROT_GROWSUP</span>   <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>PROT_GROWSUP</span>,
+        <span class='ident'>PROT_GROWSUP</span>,
     }
 }
 
@@ -418,7 +418,7 @@
             <span class='kw'>const</span> <span class='ident'>MAP_RENAME</span>       <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>MAP_RENAME</span>,
             <span class='kw'>const</span> <span class='ident'>MAP_NORESERVE</span>    <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>MAP_NORESERVE</span>,
             <span class='kw'>const</span> <span class='ident'>MAP_HASSEMAPHORE</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>MAP_HASSEMAPHORE</span>,
-            <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>not</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;openbsd&quot;</span>))]</span>
+            <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>not</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;openbsd&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;netbsd&quot;</span>)))]</span>
             <span class='kw'>const</span> <span class='ident'>MAP_STACK</span>        <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>MAP_STACK</span>,
             <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;netbsd&quot;</span>)]</span>
             <span class='kw'>const</span> <span class='ident'>MAP_WIRED</span>        <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>MAP_WIRED</span>,

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.5.1/src/unistd.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nix-0.7.0/src/unistd.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>unistd.rs.html -- source</title>
@@ -477,131 +477,206 @@
 <span id="433">433</span>
 <span id="434">434</span>
 <span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Standard symbolic constants and types</span>
 <span class='doccomment'>//!</span>
 <span class='kw'>use</span> {<span class='ident'>Errno</span>, <span class='ident'>Error</span>, <span class='prelude-ty'>Result</span>, <span class='ident'>NixPath</span>};
 <span class='kw'>use</span> <span class='ident'>fcntl</span>::{<span class='ident'>fcntl</span>, <span class='ident'>OFlag</span>, <span class='ident'>O_NONBLOCK</span>, <span class='ident'>O_CLOEXEC</span>, <span class='ident'>FD_CLOEXEC</span>};
 <span class='kw'>use</span> <span class='ident'>fcntl</span>::<span class='ident'>FcntlArg</span>::{<span class='ident'>F_SETFD</span>, <span class='ident'>F_SETFL</span>};
-<span class='kw'>use</span> <span class='ident'>libc</span>::{<span class='ident'>c_char</span>, <span class='ident'>c_void</span>, <span class='ident'>c_int</span>, <span class='ident'>size_t</span>, <span class='ident'>pid_t</span>, <span class='ident'>off_t</span>, <span class='ident'>uid_t</span>, <span class='ident'>gid_t</span>};
+<span class='kw'>use</span> <span class='ident'>libc</span>::{<span class='self'>self</span>, <span class='ident'>c_char</span>, <span class='ident'>c_void</span>, <span class='ident'>c_int</span>, <span class='ident'>c_uint</span>, <span class='ident'>size_t</span>, <span class='ident'>pid_t</span>, <span class='ident'>off_t</span>, <span class='ident'>uid_t</span>, <span class='ident'>gid_t</span>, <span class='ident'>mode_t</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ffi</span>::<span class='ident'>CString</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ffi</span>::{<span class='ident'>CString</span>, <span class='ident'>CStr</span>, <span class='ident'>OsString</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>os</span>::<span class='ident'>unix</span>::<span class='ident'>ffi</span>::<span class='ident'>OsStringExt</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::<span class='ident'>PathBuf</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>os</span>::<span class='ident'>unix</span>::<span class='ident'>io</span>::<span class='ident'>RawFd</span>;
+<span class='kw'>use</span> <span class='ident'>void</span>::<span class='ident'>Void</span>;
+<span class='kw'>use</span> <span class='ident'>sys</span>::<span class='ident'>stat</span>::<span class='ident'>Mode</span>;
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;android&quot;</span>))]</span>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>linux</span>::<span class='op'>*</span>;
 
-<span class='kw'>mod</span> <span class='ident'>ffi</span> {
-    <span class='kw'>use</span> <span class='ident'>libc</span>::{<span class='ident'>c_char</span>, <span class='ident'>c_int</span>, <span class='ident'>size_t</span>};
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>libc</span>::{<span class='ident'>fork</span>, <span class='ident'>close</span>, <span class='ident'>read</span>, <span class='ident'>write</span>, <span class='ident'>pipe</span>, <span class='ident'>ftruncate</span>, <span class='ident'>unlink</span>, <span class='ident'>setpgid</span>, <span class='ident'>getegid</span>, <span class='ident'>geteuid</span>, <span class='ident'>getgid</span>, <span class='ident'>getpid</span>, <span class='ident'>getppid</span>, <span class='ident'>getuid</span>, <span class='ident'>setuid</span>, <span class='ident'>setgid</span>, <span class='ident'>chown</span>};
-
-    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>improper_ctypes</span>)]</span>
-    <span class='kw'>extern</span> {
-        <span class='comment'>// duplicate a file descriptor</span>
-        <span class='comment'>// doc: http://man7.org/linux/man-pages/man2/dup.2.html</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>dup</span>(<span class='ident'>oldfd</span>: <span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>dup2</span>(<span class='ident'>oldfd</span>: <span class='ident'>c_int</span>, <span class='ident'>newfd</span>: <span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-
-        <span class='comment'>// change working directory</span>
-        <span class='comment'>// doc: http://man7.org/linux/man-pages/man2/chdir.2.html</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chdir</span>(<span class='ident'>path</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-
-        <span class='comment'>// Execute PATH with arguments ARGV and environment from `environ&#39;.</span>
-        <span class='comment'>// doc: http://man7.org/linux/man-pages/man3/execv.3.html</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execv</span>(<span class='ident'>path</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>, <span class='ident'>argv</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-
-        <span class='comment'>// execute program</span>
-        <span class='comment'>// doc: http://man7.org/linux/man-pages/man2/execve.2.html</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execve</span>(<span class='ident'>path</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>, <span class='ident'>argv</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>, <span class='ident'>envp</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-
-        <span class='comment'>// Execute FILE, searching in the `PATH&#39; environment variable if it contains</span>
-        <span class='comment'>// no slashes, with arguments ARGV and environment from `environ&#39;.</span>
-        <span class='comment'>// doc: http://man7.org/linux/man-pages/man3/execvp.3.html</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execvp</span>(<span class='ident'>filename</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>, <span class='ident'>argv</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-
-        <span class='comment'>// doc: http://man7.org/linux/man-pages/man3/exec.3.html</span>
-        <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;android&quot;</span>))]</span>
-        <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;execvpe&quot;</span>)]</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execvpe</span>(<span class='ident'>filename</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>, <span class='ident'>argv</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>, <span class='ident'>envp</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-
-        <span class='comment'>// run the current process in the background</span>
-        <span class='comment'>// doc: http://man7.org/linux/man-pages/man3/daemon.3.html</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>daemon</span>(<span class='ident'>nochdir</span>: <span class='ident'>c_int</span>, <span class='ident'>noclose</span>: <span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-
-        <span class='comment'>// sets the hostname to the value given</span>
-        <span class='comment'>// doc: http://man7.org/linux/man-pages/man2/gethostname.2.html</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>gethostname</span>(<span class='ident'>name</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_char</span>, <span class='ident'>len</span>: <span class='ident'>size_t</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-
-        <span class='comment'>// gets the hostname</span>
-        <span class='comment'>// doc: http://man7.org/linux/man-pages/man2/sethostname.2.html</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>sethostname</span>(<span class='ident'>name</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>, <span class='ident'>len</span>: <span class='ident'>size_t</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-
-        <span class='comment'>// change root directory</span>
-        <span class='comment'>// doc: http://man7.org/linux/man-pages/man2/chroot.2.html</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chroot</span>(<span class='ident'>path</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-
-        <span class='comment'>// synchronize a file&#39;s in-core state with storage device</span>
-        <span class='comment'>// doc: http://man7.org/linux/man-pages/man2/fsync.2.html</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fsync</span>(<span class='ident'>fd</span>: <span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fdatasync</span>(<span class='ident'>fd</span>: <span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
-    }
-}
-
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Fork</span> {
-    <span class='ident'>Parent</span>(<span class='ident'>pid_t</span>),
+<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>ForkResult</span> {
+    <span class='ident'>Parent</span> {
+        <span class='ident'>child</span>: <span class='ident'>pid_t</span>
+    },
     <span class='ident'>Child</span>
 }
 
-<span class='kw'>impl</span> <span class='ident'>Fork</span> {
+<span class='kw'>impl</span> <span class='ident'>ForkResult</span> {
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_child</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>Fork</span>::<span class='ident'>Child</span> <span class='op'>=&gt;</span> <span class='bool-val'>true</span>,
+            <span class='ident'>ForkResult</span>::<span class='ident'>Child</span> <span class='op'>=&gt;</span> <span class='bool-val'>true</span>,
             _ <span class='op'>=&gt;</span> <span class='bool-val'>false</span>
         }
     }
 
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_parent</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>Fork</span>::<span class='ident'>Parent</span>(_) <span class='op'>=&gt;</span> <span class='bool-val'>true</span>,
-            _ <span class='op'>=&gt;</span> <span class='bool-val'>false</span>
-        }
+        <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>is_child</span>()
     }
 }
 
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fork</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Fork</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>fork</span>() };
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fork</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ForkResult</span><span class='op'>&gt;</span> {
+    <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>ForkResult</span>::<span class='op'>*</span>;
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>fork</span>() };
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>res</span><span class='op'>|</span> <span class='kw'>match</span> <span class='ident'>res</span> {
-        <span class='number'>0</span> <span class='op'>=&gt;</span> <span class='ident'>Fork</span>::<span class='ident'>Child</span>,
-        <span class='ident'>res</span> <span class='op'>=&gt;</span> <span class='ident'>Fork</span>::<span class='ident'>Parent</span>(<span class='ident'>res</span>)
+        <span class='number'>0</span> <span class='op'>=&gt;</span> <span class='ident'>Child</span>,
+        <span class='ident'>res</span> <span class='op'>=&gt;</span> <span class='ident'>Parent</span> { <span class='ident'>child</span>: <span class='ident'>res</span> }
     })
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getpid</span>() <span class='op'>-&gt;</span> <span class='ident'>pid_t</span> {
-    <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>getpid</span>() } <span class='comment'>// no error handling, according to man page: &quot;These functions are always successful.&quot;</span>
+    <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>getpid</span>() } <span class='comment'>// no error handling, according to man page: &quot;These functions are always successful.&quot;</span>
 }
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getppid</span>() <span class='op'>-&gt;</span> <span class='ident'>pid_t</span> {
-    <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>getppid</span>() } <span class='comment'>// no error handling, according to man page: &quot;These functions are always successful.&quot;</span>
+    <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>getppid</span>() } <span class='comment'>// no error handling, according to man page: &quot;These functions are always successful.&quot;</span>
 }
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>setpgid</span>(<span class='ident'>pid</span>: <span class='ident'>pid_t</span>, <span class='ident'>pgid</span>: <span class='ident'>pid_t</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>setpgid</span>(<span class='ident'>pid</span>, <span class='ident'>pgid</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>setpgid</span>(<span class='ident'>pid</span>, <span class='ident'>pgid</span>) };
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
+}
+
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;android&quot;</span>))]</span>
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>gettid</span>() <span class='op'>-&gt;</span> <span class='ident'>pid_t</span> {
+    <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>syscall</span>(<span class='ident'>libc</span>::<span class='ident'>SYS_gettid</span>) <span class='kw'>as</span> <span class='ident'>pid_t</span> }    <span class='comment'>// no error handling, according to man page: &quot;These functions are always successful.&quot;</span>
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>dup</span>(<span class='ident'>oldfd</span>: <span class='ident'>RawFd</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>RawFd</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>dup</span>(<span class='ident'>oldfd</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>dup</span>(<span class='ident'>oldfd</span>) };
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>)
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>dup2</span>(<span class='ident'>oldfd</span>: <span class='ident'>RawFd</span>, <span class='ident'>newfd</span>: <span class='ident'>RawFd</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>RawFd</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>dup2</span>(<span class='ident'>oldfd</span>, <span class='ident'>newfd</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>dup2</span>(<span class='ident'>oldfd</span>, <span class='ident'>newfd</span>) };
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>)
 }
@@ -631,17 +706,115 @@
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chdir</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>path</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>cstr</span><span class='op'>|</span> {
-        <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>chdir</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>()) }
+        <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>chdir</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>()) }
     }));
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
 }
 
+<span class='doccomment'>/// Creates new directory `path` with access rights `mode`.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// # Errors</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// There are several situations where mkdir might fail:</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// - current user has insufficient rights in the parent directory</span>
+<span class='doccomment'>/// - the path already exists</span>
+<span class='doccomment'>/// - the path name is too long (longer than `PATH_MAX`, usually 4096 on linux, 1024 on OS X)</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// For a full list consult </span>
+<span class='doccomment'>/// [man mkdir(2)](http://man7.org/linux/man-pages/man2/mkdir.2.html#ERRORS)</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// # Example</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ```rust</span>
+<span class='doccomment'>/// extern crate tempdir;</span>
+<span class='doccomment'>/// extern crate nix;</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// use nix::unistd;</span>
+<span class='doccomment'>/// use nix::sys::stat;</span>
+<span class='doccomment'>/// use tempdir::TempDir;</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// fn main() {</span>
+<span class='doccomment'>///     let mut tmp_dir = TempDir::new(&quot;test_mkdir&quot;).unwrap().into_path();</span>
+<span class='doccomment'>///     tmp_dir.push(&quot;new_dir&quot;);</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>///     // create new directory and give read, write and execute rights to the owner</span>
+<span class='doccomment'>///     match unistd::mkdir(&amp;tmp_dir, stat::S_IRWXU) {</span>
+<span class='doccomment'>///        Ok(_) =&gt; println!(&quot;created {:?}&quot;, tmp_dir),</span>
+<span class='doccomment'>///        Err(err) =&gt; println!(&quot;Error creating directory: {}&quot;, err),</span>
+<span class='doccomment'>///     }</span>
+<span class='doccomment'>/// }</span>
+<span class='doccomment'>/// ```</span>
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>mkdir</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>, <span class='ident'>mode</span>: <span class='ident'>Mode</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>path</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>cstr</span><span class='op'>|</span> {
+        <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>mkdir</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>mode</span>.<span class='ident'>bits</span>() <span class='kw'>as</span> <span class='ident'>mode_t</span>) }
+    }));
+
+    <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
+}
+
+<span class='doccomment'>/// Returns the current directory as a PathBuf</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Err is returned if the current user doesn&#39;t have the permission to read or search a component</span>
+<span class='doccomment'>/// of the current path.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// # Example</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ```rust</span>
+<span class='doccomment'>/// extern crate nix;</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// use nix::unistd;</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// fn main() {</span>
+<span class='doccomment'>///     // assume that we are allowed to get current directory</span>
+<span class='doccomment'>///     let dir = unistd::getcwd().unwrap();</span>
+<span class='doccomment'>///     println!(&quot;The current directory is {:?}&quot;, dir);</span>
+<span class='doccomment'>/// }</span>
+<span class='doccomment'>/// ```</span>
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getcwd</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>PathBuf</span><span class='op'>&gt;</span> {
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='number'>512</span>);
+    <span class='kw'>loop</span> {
+        <span class='kw'>unsafe</span> {
+            <span class='kw'>let</span> <span class='ident'>ptr</span> <span class='op'>=</span> <span class='ident'>buf</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>libc</span>::<span class='ident'>c_char</span>;
+
+            <span class='comment'>// The buffer must be large enough to store the absolute pathname plus</span>
+            <span class='comment'>// a terminating null byte, or else null is returned.</span>
+            <span class='comment'>// To safely handle this we start with a reasonable size (512 bytes)</span>
+            <span class='comment'>// and double the buffer size upon every error</span>
+            <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>libc</span>::<span class='ident'>getcwd</span>(<span class='ident'>ptr</span>, <span class='ident'>buf</span>.<span class='ident'>capacity</span>()).<span class='ident'>is_null</span>() {
+                <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='ident'>CStr</span>::<span class='ident'>from_ptr</span>(<span class='ident'>buf</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_char</span>).<span class='ident'>to_bytes</span>().<span class='ident'>len</span>();
+                <span class='ident'>buf</span>.<span class='ident'>set_len</span>(<span class='ident'>len</span>);
+                <span class='ident'>buf</span>.<span class='ident'>shrink_to_fit</span>();
+                <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>PathBuf</span>::<span class='ident'>from</span>(<span class='ident'>OsString</span>::<span class='ident'>from_vec</span>(<span class='ident'>buf</span>)));
+            } <span class='kw'>else</span> {
+                <span class='kw'>let</span> <span class='ident'>error</span> <span class='op'>=</span> <span class='ident'>Errno</span>::<span class='ident'>last</span>();
+                <span class='comment'>// ERANGE means buffer was too small to store directory name</span>
+                <span class='kw'>if</span> <span class='ident'>error</span> <span class='op'>!=</span> <span class='ident'>Errno</span>::<span class='ident'>ERANGE</span> {
+                    <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Sys</span>(<span class='ident'>error</span>));
+                }
+            }
+
+            <span class='comment'>// Trigger the internal buffer resizing logic of `Vec` by requiring</span>
+            <span class='comment'>// more space than the current capacity.</span>
+            <span class='kw'>let</span> <span class='ident'>cap</span> <span class='op'>=</span> <span class='ident'>buf</span>.<span class='ident'>capacity</span>();
+            <span class='ident'>buf</span>.<span class='ident'>set_len</span>(<span class='ident'>cap</span>);
+            <span class='ident'>buf</span>.<span class='ident'>reserve</span>(<span class='number'>1</span>);
+        }
+    }
+}
+
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chown</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>, <span class='ident'>owner</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>uid_t</span><span class='op'>&gt;</span>, <span class='ident'>group</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>gid_t</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>path</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>cstr</span><span class='op'>|</span> {
-        <span class='comment'>// We use `0 - 1` to get `-1 : {u,g}id_t` which is specified as the no-op value for chown(3).</span>
-        <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>chown</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>owner</span>.<span class='ident'>unwrap_or</span>(<span class='number'>0</span> <span class='op'>-</span> <span class='number'>1</span>), <span class='ident'>group</span>.<span class='ident'>unwrap_or</span>(<span class='number'>0</span> <span class='op'>-</span> <span class='number'>1</span>)) }
+        <span class='comment'>// According to the POSIX specification, -1 is used to indicate that</span>
+        <span class='comment'>// owner and group, respectively, are not to be changed. Since uid_t and</span>
+        <span class='comment'>// gid_t are unsigned types, we use wrapping_sub to get &#39;-1&#39;.</span>
+        <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>chown</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>(),
+                             <span class='ident'>owner</span>.<span class='ident'>unwrap_or</span>((<span class='number'>0</span> <span class='kw'>as</span> <span class='ident'>uid_t</span>).<span class='ident'>wrapping_sub</span>(<span class='number'>1</span>)),
+                             <span class='ident'>group</span>.<span class='ident'>unwrap_or</span>((<span class='number'>0</span> <span class='kw'>as</span> <span class='ident'>gid_t</span>).<span class='ident'>wrapping_sub</span>(<span class='number'>1</span>))) }
     }));
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
@@ -657,49 +830,60 @@
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execv</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>CString</span>, <span class='ident'>argv</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>CString</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execv</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>CString</span>, <span class='ident'>argv</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>CString</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Void</span><span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>args_p</span> <span class='op'>=</span> <span class='ident'>to_exec_array</span>(<span class='ident'>argv</span>);
 
     <span class='kw'>unsafe</span> {
-        <span class='ident'>ffi</span>::<span class='ident'>execv</span>(<span class='ident'>path</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>args_p</span>.<span class='ident'>as_ptr</span>())
+        <span class='ident'>libc</span>::<span class='ident'>execv</span>(<span class='ident'>path</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>args_p</span>.<span class='ident'>as_ptr</span>())
     };
 
     <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Sys</span>(<span class='ident'>Errno</span>::<span class='ident'>last</span>()))
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execve</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>CString</span>, <span class='ident'>args</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>CString</span>], <span class='ident'>env</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>CString</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execve</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>CString</span>, <span class='ident'>args</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>CString</span>], <span class='ident'>env</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>CString</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Void</span><span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>args_p</span> <span class='op'>=</span> <span class='ident'>to_exec_array</span>(<span class='ident'>args</span>);
     <span class='kw'>let</span> <span class='ident'>env_p</span> <span class='op'>=</span> <span class='ident'>to_exec_array</span>(<span class='ident'>env</span>);
 
     <span class='kw'>unsafe</span> {
-        <span class='ident'>ffi</span>::<span class='ident'>execve</span>(<span class='ident'>path</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>args_p</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>env_p</span>.<span class='ident'>as_ptr</span>())
+        <span class='ident'>libc</span>::<span class='ident'>execve</span>(<span class='ident'>path</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>args_p</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>env_p</span>.<span class='ident'>as_ptr</span>())
     };
 
     <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Sys</span>(<span class='ident'>Errno</span>::<span class='ident'>last</span>()))
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execvp</span>(<span class='ident'>filename</span>: <span class='kw-2'>&amp;</span><span class='ident'>CString</span>, <span class='ident'>args</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>CString</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execvp</span>(<span class='ident'>filename</span>: <span class='kw-2'>&amp;</span><span class='ident'>CString</span>, <span class='ident'>args</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>CString</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Void</span><span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>args_p</span> <span class='op'>=</span> <span class='ident'>to_exec_array</span>(<span class='ident'>args</span>);
 
     <span class='kw'>unsafe</span> {
-        <span class='ident'>ffi</span>::<span class='ident'>execvp</span>(<span class='ident'>filename</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>args_p</span>.<span class='ident'>as_ptr</span>())
+        <span class='ident'>libc</span>::<span class='ident'>execvp</span>(<span class='ident'>filename</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>args_p</span>.<span class='ident'>as_ptr</span>())
     };
 
     <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Sys</span>(<span class='ident'>Errno</span>::<span class='ident'>last</span>()))
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>daemon</span>(<span class='ident'>nochdir</span>: <span class='ident'>bool</span>, <span class='ident'>noclose</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>daemon</span>(<span class='ident'>nochdir</span> <span class='kw'>as</span> <span class='ident'>c_int</span>, <span class='ident'>noclose</span> <span class='kw'>as</span> <span class='ident'>c_int</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>daemon</span>(<span class='ident'>nochdir</span> <span class='kw'>as</span> <span class='ident'>c_int</span>, <span class='ident'>noclose</span> <span class='kw'>as</span> <span class='ident'>c_int</span>) };
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>sethostname</span>(<span class='ident'>name</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+    <span class='comment'>// Handle some differences in type of the len arg across platforms.</span>
+    <span class='macro'>cfg_if</span><span class='macro'>!</span> {
+        <span class='kw'>if</span> <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;dragonfly&quot;</span>,
+                     <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;freebsd&quot;</span>,
+                     <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;ios&quot;</span>,
+                     <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;macos&quot;</span>, ))]</span> {
+            <span class='kw'>type</span> <span class='ident'>sethostname_len_t</span> <span class='op'>=</span> <span class='ident'>c_int</span>;
+        } <span class='kw'>else</span> {
+            <span class='kw'>type</span> <span class='ident'>sethostname_len_t</span> <span class='op'>=</span> <span class='ident'>size_t</span>;
+        }
+    }
     <span class='kw'>let</span> <span class='ident'>ptr</span> <span class='op'>=</span> <span class='ident'>name</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>;
-    <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='ident'>name</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>size_t</span>;
+    <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='ident'>name</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>sethostname_len_t</span>;
 
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>sethostname</span>(<span class='ident'>ptr</span>, <span class='ident'>len</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>sethostname</span>(<span class='ident'>ptr</span>, <span class='ident'>len</span>) };
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
 }
 
@@ -707,32 +891,66 @@
     <span class='kw'>let</span> <span class='ident'>ptr</span> <span class='op'>=</span> <span class='ident'>name</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_char</span>;
     <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='ident'>name</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>size_t</span>;
 
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>gethostname</span>(<span class='ident'>ptr</span>, <span class='ident'>len</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>gethostname</span>(<span class='ident'>ptr</span>, <span class='ident'>len</span>) };
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>close</span>(<span class='ident'>fd</span>: <span class='ident'>RawFd</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>close</span>(<span class='ident'>fd</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>close</span>(<span class='ident'>fd</span>) };
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read</span>(<span class='ident'>fd</span>: <span class='ident'>RawFd</span>, <span class='ident'>buf</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>read</span>(<span class='ident'>fd</span>, <span class='ident'>buf</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>, <span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>size_t</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>read</span>(<span class='ident'>fd</span>, <span class='ident'>buf</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>, <span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>size_t</span>) };
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>r</span><span class='op'>|</span> <span class='ident'>r</span> <span class='kw'>as</span> <span class='ident'>usize</span>)
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>write</span>(<span class='ident'>fd</span>: <span class='ident'>RawFd</span>, <span class='ident'>buf</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>write</span>(<span class='ident'>fd</span>, <span class='ident'>buf</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>size_t</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>write</span>(<span class='ident'>fd</span>, <span class='ident'>buf</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>buf</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>size_t</span>) };
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>r</span><span class='op'>|</span> <span class='ident'>r</span> <span class='kw'>as</span> <span class='ident'>usize</span>)
+}
+
+<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Whence</span> {
+    <span class='ident'>SeekSet</span>,
+    <span class='ident'>SeekCur</span>,
+    <span class='ident'>SeekEnd</span>,
+    <span class='ident'>SeekData</span>,
+    <span class='ident'>SeekHole</span>
+}
+
+<span class='kw'>impl</span> <span class='ident'>Whence</span> {
+    <span class='kw'>fn</span> <span class='ident'>to_libc_type</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span> {
+        <span class='kw'>match</span> <span class='self'>self</span> {
+            <span class='kw-2'>&amp;</span><span class='ident'>Whence</span>::<span class='ident'>SeekSet</span> <span class='op'>=&gt;</span> <span class='ident'>libc</span>::<span class='ident'>SEEK_SET</span>,
+            <span class='kw-2'>&amp;</span><span class='ident'>Whence</span>::<span class='ident'>SeekCur</span> <span class='op'>=&gt;</span> <span class='ident'>libc</span>::<span class='ident'>SEEK_CUR</span>,
+            <span class='kw-2'>&amp;</span><span class='ident'>Whence</span>::<span class='ident'>SeekEnd</span> <span class='op'>=&gt;</span> <span class='ident'>libc</span>::<span class='ident'>SEEK_END</span>,
+            <span class='kw-2'>&amp;</span><span class='ident'>Whence</span>::<span class='ident'>SeekData</span> <span class='op'>=&gt;</span> <span class='number'>3</span>,
+            <span class='kw-2'>&amp;</span><span class='ident'>Whence</span>::<span class='ident'>SeekHole</span> <span class='op'>=&gt;</span> <span class='number'>4</span>
+        }
+    }
+
+}
+
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>lseek</span>(<span class='ident'>fd</span>: <span class='ident'>RawFd</span>, <span class='ident'>offset</span>: <span class='ident'>libc</span>::<span class='ident'>off_t</span>, <span class='ident'>whence</span>: <span class='ident'>Whence</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>libc</span>::<span class='ident'>off_t</span><span class='op'>&gt;</span> {
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>lseek</span>(<span class='ident'>fd</span>, <span class='ident'>offset</span>, <span class='ident'>whence</span>.<span class='ident'>to_libc_type</span>()) };
+
+    <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>r</span><span class='op'>|</span> <span class='ident'>r</span> <span class='kw'>as</span> <span class='ident'>libc</span>::<span class='ident'>off_t</span>)
+}
+
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;android&quot;</span>))]</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>lseek64</span>(<span class='ident'>fd</span>: <span class='ident'>RawFd</span>, <span class='ident'>offset</span>: <span class='ident'>libc</span>::<span class='ident'>off64_t</span>, <span class='ident'>whence</span>: <span class='ident'>Whence</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>libc</span>::<span class='ident'>off64_t</span><span class='op'>&gt;</span> {
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>lseek64</span>(<span class='ident'>fd</span>, <span class='ident'>offset</span>, <span class='ident'>whence</span>.<span class='ident'>to_libc_type</span>()) };
+
+    <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>r</span><span class='op'>|</span> <span class='ident'>r</span> <span class='kw'>as</span> <span class='ident'>libc</span>::<span class='ident'>off64_t</span>)
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>pipe</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(<span class='ident'>RawFd</span>, <span class='ident'>RawFd</span>)<span class='op'>&gt;</span> {
     <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fds</span>: [<span class='ident'>c_int</span>; <span class='number'>2</span>] <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>uninitialized</span>();
 
-        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>ffi</span>::<span class='ident'>pipe</span>(<span class='ident'>fds</span>.<span class='ident'>as_mut_ptr</span>());
+        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>pipe</span>(<span class='ident'>fds</span>.<span class='ident'>as_mut_ptr</span>());
 
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>));
 
@@ -744,7 +962,7 @@
     <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fds</span>: [<span class='ident'>c_int</span>; <span class='number'>2</span>] <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>uninitialized</span>();
 
-        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>ffi</span>::<span class='ident'>pipe</span>(<span class='ident'>fds</span>.<span class='ident'>as_mut_ptr</span>());
+        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>libc</span>::<span class='ident'>pipe</span>(<span class='ident'>fds</span>.<span class='ident'>as_mut_ptr</span>());
 
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>));
 
@@ -774,13 +992,13 @@
         <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>close</span>(<span class='ident'>fd1</span>);
             <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>close</span>(<span class='ident'>fd2</span>);
-            <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>e</span>);
+            <span class='prelude-val'>Err</span>(<span class='ident'>e</span>)
         }
     }
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ftruncate</span>(<span class='ident'>fd</span>: <span class='ident'>RawFd</span>, <span class='ident'>len</span>: <span class='ident'>off_t</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>ftruncate</span>(<span class='ident'>fd</span>, <span class='ident'>len</span>) }).<span class='ident'>map</span>(<span class='ident'>drop</span>)
+    <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>ftruncate</span>(<span class='ident'>fd</span>, <span class='ident'>len</span>) }).<span class='ident'>map</span>(<span class='ident'>drop</span>)
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>isatty</span>(<span class='ident'>fd</span>: <span class='ident'>RawFd</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>bool</span><span class='op'>&gt;</span> {
@@ -803,17 +1021,16 @@
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unlink</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>path</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>cstr</span><span class='op'>|</span> {
         <span class='kw'>unsafe</span> {
-            <span class='ident'>ffi</span>::<span class='ident'>unlink</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>())
+            <span class='ident'>libc</span>::<span class='ident'>unlink</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>())
         }
     }));
-
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chroot</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>NixPath</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>path</span>.<span class='ident'>with_nix_path</span>(<span class='op'>|</span><span class='ident'>cstr</span><span class='op'>|</span> {
-        <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>chroot</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>()) }
+        <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>chroot</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>()) }
     }));
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
@@ -821,14 +1038,19 @@
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fsync</span>(<span class='ident'>fd</span>: <span class='ident'>RawFd</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>fsync</span>(<span class='ident'>fd</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>fsync</span>(<span class='ident'>fd</span>) };
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
 }
 
+<span class='comment'>// `fdatasync(2) is in POSIX, but in libc it is only defined in `libc::notbsd`.</span>
+<span class='comment'>// TODO: exclude only Apple systems after https://github.com/rust-lang/libc/pull/211</span>
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>,
+          <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;android&quot;</span>,
+          <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;emscripten&quot;</span>))]</span>
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fdatasync</span>(<span class='ident'>fd</span>: <span class='ident'>RawFd</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>fdatasync</span>(<span class='ident'>fd</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>fdatasync</span>(<span class='ident'>fd</span>) };
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
 }
@@ -841,36 +1063,50 @@
 <span class='comment'>//   - http://pubs.opengroup.org/onlinepubs/9699919799/functions/geteuid.html</span>
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getuid</span>() <span class='op'>-&gt;</span> <span class='ident'>uid_t</span> {
-    <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>getuid</span>() }
+    <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>getuid</span>() }
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>geteuid</span>() <span class='op'>-&gt;</span> <span class='ident'>uid_t</span> {
-    <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>geteuid</span>() }
+    <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>geteuid</span>() }
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getgid</span>() <span class='op'>-&gt;</span> <span class='ident'>gid_t</span> {
-    <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>getgid</span>() }
+    <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>getgid</span>() }
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getegid</span>() <span class='op'>-&gt;</span> <span class='ident'>gid_t</span> {
-    <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>getegid</span>() }
+    <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>getegid</span>() }
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>setuid</span>(<span class='ident'>uid</span>: <span class='ident'>uid_t</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>setuid</span>(<span class='ident'>uid</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>setuid</span>(<span class='ident'>uid</span>) };
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>setgid</span>(<span class='ident'>gid</span>: <span class='ident'>gid_t</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>ffi</span>::<span class='ident'>setgid</span>(<span class='ident'>gid</span>) };
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>setgid</span>(<span class='ident'>gid</span>) };
 
     <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
+}
+
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>pause</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+    <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>pause</span>() };
+
+    <span class='ident'>Errno</span>::<span class='ident'>result</span>(<span class='ident'>res</span>).<span class='ident'>map</span>(<span class='ident'>drop</span>)
+}
+
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
+<span class='comment'>// Per POSIX, does not fail:</span>
+<span class='comment'>//   http://pubs.opengroup.org/onlinepubs/009695399/functions/sleep.html#tag_03_705_05</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>sleep</span>(<span class='ident'>seconds</span>: <span class='ident'>libc</span>::<span class='ident'>c_uint</span>) <span class='op'>-&gt;</span> <span class='ident'>c_uint</span> {
+    <span class='kw'>unsafe</span> { <span class='ident'>libc</span>::<span class='ident'>sleep</span>(<span class='ident'>seconds</span>) }
 }
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;android&quot;</span>))]</span>
