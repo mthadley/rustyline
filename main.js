@@ -34,8 +34,7 @@
                      "primitive",
                      "associatedtype",
                      "constant",
-                     "associatedconstant",
-                     "union"];
+                     "associatedconstant"];
 
     // used for special search precedence
     var TY_PRIMITIVE = itemTypes.indexOf("primitive");
@@ -578,6 +577,10 @@
                         displayPath = item.path + '::';
                         href = rootPath + item.path.replace(/::/g, '/') + '/' +
                                name + '/index.html';
+                    } else if (type === 'static' || type === 'reexport') {
+                        displayPath = item.path + '::';
+                        href = rootPath + item.path.replace(/::/g, '/') +
+                               '/index.html';
                     } else if (type === "primitive") {
                         displayPath = "";
                         href = rootPath + item.path.replace(/::/g, '/') +
@@ -588,14 +591,9 @@
                     } else if (item.parent !== undefined) {
                         var myparent = item.parent;
                         var anchor = '#' + type + '.' + name;
-                        var parentType = itemTypes[myparent.ty];
-                        if (parentType === "primitive") {
-                            displayPath = myparent.name + '::';
-                        } else {
-                            displayPath = item.path + '::' + myparent.name + '::';
-                        }
+                        displayPath = item.path + '::' + myparent.name + '::';
                         href = rootPath + item.path.replace(/::/g, '/') +
-                               '/' + parentType +
+                               '/' + itemTypes[myparent.ty] +
                                '.' + myparent.name +
                                '.html' + anchor;
                     } else {
@@ -923,6 +921,15 @@
         window.register_implementors(window.pending_implementors);
     }
 
+    // See documentation in html/render.rs for what this is doing.
+    var query = getQueryStringParams();
+    if (query['gotosrc']) {
+        window.location = $('#src-' + query['gotosrc']).attr('href');
+    }
+    if (query['gotomacrosrc']) {
+        window.location = $('.srclink').attr('href');
+    }
+
     function labelForToggleButton(sectionIsCollapsed) {
         if (sectionIsCollapsed) {
             // button will expand the section
@@ -954,22 +961,20 @@
         }
     }
 
-    function collapseDocs(toggle, animate) {
+    $("#toggle-all-docs").on("click", toggleAllDocs);
+
+    $(document).on("click", ".collapse-toggle", function() {
+        var toggle = $(this);
         var relatedDoc = toggle.parent().next();
         if (relatedDoc.is(".stability")) {
             relatedDoc = relatedDoc.next();
         }
         if (relatedDoc.is(".docblock")) {
             if (relatedDoc.is(":visible")) {
-                if (animate === true) {
-                    relatedDoc.slideUp({duration: 'fast', easing: 'linear'});
-                    toggle.children(".toggle-label").fadeIn();
-                } else {
-                    relatedDoc.hide();
-                    toggle.children(".toggle-label").show();
-                }
+                relatedDoc.slideUp({duration: 'fast', easing: 'linear'});
                 toggle.parent(".toggle-wrapper").addClass("collapsed");
                 toggle.children(".inner").text(labelForToggleButton(true));
+                toggle.children(".toggle-label").fadeIn();
             } else {
                 relatedDoc.slideDown({duration: 'fast', easing: 'linear'});
                 toggle.parent(".toggle-wrapper").removeClass("collapsed");
@@ -977,12 +982,6 @@
                 toggle.children(".toggle-label").hide();
             }
         }
-    }
-
-    $("#toggle-all-docs").on("click", toggleAllDocs);
-
-    $(document).on("click", ".collapse-toggle", function() {
-        collapseDocs($(this), true)
     });
 
     $(function() {
@@ -998,38 +997,12 @@
         });
 
         var mainToggle =
-            $(toggle.clone()).append(
+            $(toggle).append(
                 $('<span/>', {'class': 'toggle-label'})
                     .css('display', 'none')
                     .html('&nbsp;Expand&nbsp;description'));
         var wrapper = $("<div class='toggle-wrapper'>").append(mainToggle);
         $("#main > .docblock").before(wrapper);
-
-        $(".docblock.autohide").each(function() {
-            var wrap = $(this).prev();
-            if (wrap.is(".toggle-wrapper")) {
-                var toggle = wrap.children().first();
-                if ($(this).children().first().is("h3")) {
-                    toggle.children(".toggle-label")
-                          .text(" Show " + $(this).children().first().text());
-                }
-                $(this).hide();
-                wrap.addClass("collapsed");
-                toggle.children(".inner").text(labelForToggleButton(true));
-                toggle.children(".toggle-label").show();
-            }
-        });
-
-        var mainToggle =
-            $(toggle).append(
-                $('<span/>', {'class': 'toggle-label'})
-                    .css('display', 'none')
-                    .html('&nbsp;Expand&nbsp;attributes'));
-        var wrapper = $("<div class='toggle-wrapper toggle-attributes'>").append(mainToggle);
-        $("#main > pre > .attributes").each(function() {
-            $(this).before(wrapper);
-            collapseDocs($($(this).prev().children()[0]), false);
-        });
     });
 
     $('pre.line-numbers').on('click', 'span', function() {
