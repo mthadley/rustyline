@@ -58,6 +58,7 @@ pub type Result<T> = result::Result<T, error::ReadlineError>;
 
 // Represent the state during line editing.
 struct State<'out, 'prompt> {
+    hint: Option<String>,
     out: &'out mut Write,
     prompt: &'prompt str, // Prompt to display
     prompt_size: Position, // Prompt Unicode width and height
@@ -86,6 +87,7 @@ impl<'out, 'prompt> State<'out, 'prompt> {
         let cols = term.get_columns();
         let prompt_size = calculate_position(prompt, Position::default(), cols);
         State {
+            hint: None,
             out: out,
             prompt: prompt,
             prompt_size: prompt_size,
@@ -105,6 +107,10 @@ impl<'out, 'prompt> State<'out, 'prompt> {
 
     fn backup(&mut self) {
         self.snapshot.backup(&self.line);
+    }
+
+    fn set_hint(&mut self, hint: Option<String>) {
+        self.hint = hint;
     }
 
     /// Rewrite the currently edited line accordingly to the buffer content,
@@ -146,6 +152,10 @@ impl<'out, 'prompt> State<'out, 'prompt> {
         ab.push_str(prompt);
         // display the input line
         ab.push_str(&self.line);
+        if self.hint.is_some() {
+            ab.push_str("  ");
+            ab.push_str(&self.hint.as_ref().unwrap());
+        }
         // we have to generate our own newline on line wrap
         if end_pos.col == 0 && end_pos.row > 0 {
             ab.push_str("\n");
@@ -788,11 +798,19 @@ fn readline_edit<C: Completer>(prompt: &str,
                            editor.term.clone(),
                            prompt,
                            editor.history.len());
-    try!(s.refresh_line());
-
     let mut rdr = try!(s.term.create_reader());
 
     loop {
+        let hint = completer.and_then(|completer| {
+            completer.complete(&s.line, s.line.pos())
+                .ok()
+                .and_then(|(_, completions)| completions.first().cloned())
+        });
+
+        s.set_hint(hint);
+
+        try!(s.refresh_line());
+
         let rk = rdr.next_key(editor.config.keyseq_timeout());
         if rk.is_err() && s.term.sigwinch() {
             s.update_columns();
@@ -1188,6 +1206,7 @@ mod test {
                         -> State<'out, 'static> {
         let term = Terminal::new();
         State {
+            hint: None,
             out: out,
             prompt: "",
             prompt_size: Position::default(),
