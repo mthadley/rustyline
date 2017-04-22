@@ -826,7 +826,7 @@ fn readline_edit<C: Completer>(prompt: &str,
         }
 
         // autocomplete
-        if key == KeyPress::Tab && completer.is_some() {
+        if key == KeyPress::Tab && editor.config.tab_completion() && completer.is_some() {
             let next = try!(complete_line(&mut rdr, &mut s, completer.unwrap(), &editor.config));
             if next.is_some() {
                 editor.kill_ring.reset();

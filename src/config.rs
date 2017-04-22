@@ -3,6 +3,7 @@ use std::default::Default;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Config {
+    tab_completion: bool,
     /// Maximum number of entries in History.
     max_history_size: usize,
     history_duplicates: HistoryDuplicates,
@@ -48,11 +49,16 @@ impl Config {
     pub fn keyseq_timeout(&self) -> i32 {
         self.keyseq_timeout
     }
+
+    pub fn tab_completion(&self) -> bool {
+        self.tab_completion
+    }
 }
 
 impl Default for Config {
     fn default() -> Config {
         Config {
+            tab_completion: true,
             max_history_size: 100,
             history_duplicates: HistoryDuplicates::IgnoreConsecutive,
             history_ignore_space: false,
@@ -127,6 +133,11 @@ impl Builder {
     /// Set `keyseq_timeout` in milliseconds.
     pub fn keyseq_timeout(mut self, keyseq_timeout_ms: i32) -> Builder {
         self.p.keyseq_timeout = keyseq_timeout_ms;
+        self
+    }
+
+    pub fn tab_completion(mut self, enabled: bool) -> Builder {
+        self.p.tab_completion = enabled;
         self
     }
 
