@@ -152,9 +152,10 @@ impl<'out, 'prompt> State<'out, 'prompt> {
         ab.push_str(prompt);
         // display the input line
         ab.push_str(&self.line);
+        // display autocompletion hints
         if self.hint.is_some() {
             ab.push_str("  ");
-            ab.push_str(&self.hint.as_ref().unwrap());
+            ab.push_str(self.hint.as_ref().unwrap());
         }
         // we have to generate our own newline on line wrap
         if end_pos.col == 0 && end_pos.row > 0 {
@@ -957,6 +958,9 @@ fn readline_edit<C: Completer>(prompt: &str,
             // TODO CTRL-_ // undo
             KeyPress::Enter |
             KeyPress::Ctrl('J') => {
+                // Remove hint
+                s.set_hint(None);
+                s.refresh_line()?;
                 // Accept the line regardless of where the cursor is.
                 editor.kill_ring.reset();
                 try!(edit_move_end(&mut s));
